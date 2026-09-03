@@ -1,64 +1,43 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import ProjectCard from "./components/project_card";
 
-export default function App() {
-  const [apiStatus, setApiStatus] = useState("Checking...");
+const Projects = [
+  {
+    id: "cnn",
+    title: "CNN from scratch",
+    description:
+      "Draw a number on an HTML5 canvas and watch a neural network predict it live",
+    path: "/cnn",
+  },
+  {
+    id: "blackjack",
+    title: "Blackjack rl agent",
+    description:
+      "A blackjack agent that learned the game over 1 million hands and is pretty good",
+    path: "/blackjack",
+  },
+  {
+    id: "chess",
+    title: "Chess Engine",
+    description:
+      "Transformer based chess engine. It is combined with a tree search algorithm and reaches 2000+ elo",
+    path: "/chess",
+  },
+  {
+    id: "craft",
+    title: "Infinite-Craft clone",
+    description:
+      "An element-combining sandbox powered by LLM combination logic",
+    path: "/craft",
+  },
+];
 
-  useEffect(() => {
-    fetch("http://localhost:8000/")
-      .then((res) => res.json())
-      .then((data) => setApiStatus(data.message))
-      .catch(() => setApiStatus("Backend Offline"));
-  }, []);
-
+export default function Home() {
   return (
-    <div className="max-w-5xl mx-auto p-8">
-      <header className="mb-12 border-b border-slate-800 pb-6">
-        <h1 className="text-4xl font-extrabold tracking-tight text-indigo-400">
-          Interactive AI Arcade
-        </h1>
-        <p className="mt-2 text-slate-400">
-          Portfolio backend connection status:{" "}
-          <span className="font-mono text-emerald-400">{apiStatus}</span>
-        </p>
-      </header>
-
-      <main className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-bold mb-2 text-indigo-300">
-            1. Digit Recognizer
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Draw a number on the canvas for my pure NumPy CNN.
-          </p>
-        </div>
-
-        <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-bold mb-2 text-indigo-300">
-            2. Transformer Chess
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Play live moves against my custom trained Transformer.
-          </p>
-        </div>
-
-        <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-bold mb-2 text-indigo-300">
-            3. Blackjack RL
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Watch or play against an optimal Q-learning policy.
-          </p>
-        </div>
-
-        <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700">
-          <h2 className="text-xl font-bold mb-2 text-indigo-300">
-            4. Infinite Craft
-          </h2>
-          <p className="text-slate-400 text-sm">
-            Combine elements dynamically driven by AI.
-          </p>
-        </div>
-      </main>
+    <div className="flex flex-col gap-y-20 h-full w-screen items-center bg-color-main text-color-text">
+      {Projects.map((project) => (
+        <ProjectCard key={project.id} {...project} />
+      ))}
     </div>
   );
 }

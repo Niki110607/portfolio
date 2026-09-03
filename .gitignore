@@ -1,15 +1,42 @@
-# Python
+# ==========================================
+# Root .gitignore for Portfolio Monorepo
+# ==========================================
+
+# Operating System & IDE Files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.env
+
+# ------------------------------------------
+# Python Backend Ignores
+# ------------------------------------------
 backend/venv/
 backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
 *.pyc
-*.npy
-*.pt
+*.pyo
+*.pyd
 
-# Node / React
+# Model Checkpoints (If larger than 100MB)
+# backend/models/*.pt
+
+# ------------------------------------------
+# React / Node Frontend Ignores
+# ------------------------------------------
 frontend/node_modules/
 frontend/dist/
+frontend/build/
+frontend/.cache/
+*.log
 
-# System / IDE
-.DS_Store
-.vscode/
-.env
+# Testing / Coverage
+coverage/
+.pytest_cache/
