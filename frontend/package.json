@@ -12,8 +12,10 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "canvas-confetti": "^1.9.4",
+    "chess.js": "^1.4.0",
     "lucide-react": "^1.39.0",
     "react": "^19.2.8",
+    "react-chessboard": "^5.12.1",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.3"
   },
