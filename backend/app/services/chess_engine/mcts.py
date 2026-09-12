@@ -1,12 +1,12 @@
+import math
 import time
 from collections import OrderedDict
-from pathlib import Path
 
 import chess
 import numpy as np
 import torch
-from architecture import ChessTransformer_conv
-from data_processing import get_all_moves, process_test_data
+from app.services.chess_engine.architecture import ChessTransformer_conv
+from app.services.chess_engine.data_processing import get_all_moves, process_test_data
 
 
 class Node:
@@ -151,7 +151,7 @@ class MCTS:
     def __init__(self):
         self.current_node = Node(1)
         self.current_board = chess.Board()
-        self.batch_size = 128
+        self.batch_size = 16
         self.game_started = False
 
         self.all_moves, self.move_to_idx = get_all_moves()
@@ -174,8 +174,7 @@ class MCTS:
             dropout=0.1
         ).to(device)
 
-        current_dir = Path(__file__).resolve().parent
-        weights_path = current_dir.parent / "model" / "chessformer_model_weights.pth"
+        weights_path = "models/chessformer_model_weights.pth"
         state_dict = torch.load(weights_path, map_location=torch.device(device))
 
         new_state_dict = OrderedDict()
@@ -273,7 +272,7 @@ class MCTS:
             self.current_node = self.current_node.parent
 
 
-    def evaluate_position(self, fen=None, max_time=5, delta=1):
+    def evaluate_position(self, fen=None, max_time=1, delta=0.5):
         """
         This function evaluates a given position and returns both the best move and the evaluation.
         :param fen: Can be used to evaluate a custom position else the current position from an ongoing game will be evaluated.
@@ -288,11 +287,11 @@ class MCTS:
         evaluation *= int(not self.current_board.turn) * 2 - 1
 
         if evaluation > 1.0:
-            evaluation = 1.0
+            evaluation = 1
         elif evaluation < -1.0:
             evaluation = -1.0
 
-        return best_move, evaluation
+        return best_move, self._eval_to_cp(evaluation)
 
 
     def _run(self, max_time, delta):
@@ -465,6 +464,21 @@ class MCTS:
             best_move = chess.Move(best_move.from_square, best_move.to_square, promotion=chess.QUEEN)
 
         return best_move
+
+
+    def _eval_to_cp(self, evaluation):
+        evaluation = (evaluation + 1) / 2
+
+        if evaluation == 1.0:
+            evaluation = 0.999
+        elif evaluation == 0.0:
+            evaluation = 0.001
+
+        print(evaluation)
+
+        evaluation_cp = -4 * (math.log10((1 / evaluation) - 1))
+
+        return evaluation_cp
 
 
 

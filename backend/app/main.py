@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers.chess import router as chess_router
+from app.routers.cnn import router as cnn_router
+
 app = FastAPI(title="AI Arcade Portfolio API")
 
 # Enable CORS so Vite React (port 5173) can talk to FastAPI (port 8000)
@@ -11,6 +14,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(chess_router)
+app.include_router(cnn_router)
 
 @app.get("/")
 async def root():

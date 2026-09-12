@@ -1,5 +1,5 @@
 import torch
-import torch.nn as nn
+from torch import nn
 
 
 # model
@@ -142,11 +142,3 @@ class ChessTransformer_conv(nn.Module):
             move_logits += legal_move_mask
 
         return evaluation_logits, move_logits
-
-
-"""model = ChessTransformer(256, 16, 8, 1024, 0.1)
-print(model)
-num_params = sum(
-    p.numel() for p in model.parameters() if p.requires_grad
-)
-print(f"Number of parameters: {num_params}")"""
