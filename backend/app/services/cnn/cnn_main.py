@@ -22,6 +22,6 @@ def init_model():
             dropout=0.0
             )
 
-    model.load_weights(filepath="models/test.npz")
+    model.load_weights(filepath="models/cnn_model_weights.npz")
 
     return model

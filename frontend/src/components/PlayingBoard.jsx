@@ -23,7 +23,7 @@ const createCustomGame = () => {
   return new Game(initialState);
 };
 
-export default function PlayingBoard() {
+export default function PlayingBoard({ onHint }) {
   const [game, setGame] = useState(createCustomGame);
   const [gameState, setGameState] = useState(() => game.getState());
   const [chips, setChips] = useState(500);
@@ -47,6 +47,34 @@ export default function PlayingBoard() {
     setGame(freshGame);
     setGameState({ ...freshGame.getState() });
     setBet(0);
+  };
+
+  const requestDQN = async (currentHand, canDouble, canSplit) => {
+    const playerValue = gameState.handInfo[currentHand].playerValue.hi;
+    const dealerValue = gameState.dealerValue.hi;
+    const isSoft =
+      gameState.handInfo[currentHand].playerValue.hi >
+      gameState.handInfo[currentHand].playerValue.lo
+        ? true
+        : false;
+
+    const response = await fetch("http://127.0.0.1:8000/blackjack/predict", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        player_value: playerValue,
+        dealer_value: dealerValue,
+        is_soft: isSoft,
+        can_double: canDouble,
+        can_split: canSplit,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (onHint && data) onHint(data);
   };
 
   // Stage & state derives
@@ -379,20 +407,20 @@ export default function PlayingBoard() {
             <div className="flex flex-wrap items-center justify-center gap-2">
               <button
                 onClick={() =>
-                  handleAction(actions.hit({ position: currentHand }))
-                }
-                className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95"
-              >
-                Hit
-              </button>
-
-              <button
-                onClick={() =>
                   handleAction(actions.stand({ position: currentHand }))
                 }
                 className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95"
               >
                 Stand
+              </button>
+
+              <button
+                onClick={() =>
+                  handleAction(actions.hit({ position: currentHand }))
+                }
+                className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95"
+              >
+                Hit
               </button>
 
               <button
@@ -421,6 +449,19 @@ export default function PlayingBoard() {
                 className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
               >
                 Split
+              </button>
+              <button
+                onClick={() =>
+                  requestDQN(
+                    currentHand,
+                    gameState?.handInfo?.[currentHand]?.availableActions
+                      ?.double,
+                    gameState?.handInfo?.[currentHand]?.availableActions?.split,
+                  )
+                }
+                className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95 disabled:opacity-30 disabled:pointer-events-none"
+              >
+                Hint
               </button>
             </div>
           )}

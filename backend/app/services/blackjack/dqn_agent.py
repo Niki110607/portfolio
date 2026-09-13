@@ -1,5 +1,7 @@
-import torch.nn as nn
-class NeuralNetwork(nn.Module):
+from torch import nn
+
+
+class DQN(nn.Module):
     def __init__(self):
         super().__init__()
         self.layers = nn.Sequential(

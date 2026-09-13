@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from app.services.cnn.cnn_main import init_model
 
-router = APIRouter(prefix="/cnn", tags=["chess"])
+router = APIRouter(prefix="/cnn", tags=["cnn"])
 
 model = init_model()
 
