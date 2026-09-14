@@ -9,7 +9,7 @@ router = APIRouter(prefix="/blackjack", tags=["blackjack"])
 model = DQN()
 model.load_state_dict(torch.load("models/blackjack_model_weights.pth"))
 
-class DigitPayload(BaseModel):
+class BlackjackPayload(BaseModel):
     player_value: float
     dealer_value: float
     is_soft: bool
@@ -17,7 +17,7 @@ class DigitPayload(BaseModel):
     can_split: bool
 
 @router.post("/predict")
-def predict_move(payload: DigitPayload):
+def predict_move(payload: BlackjackPayload):
     state = (float(payload.player_value), float(payload.dealer_value), float(payload.is_soft))
     state = torch.tensor(state).float().unsqueeze(0)
 

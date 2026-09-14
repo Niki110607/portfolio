@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers.blackjack import router as bj_router
 from app.routers.chess import router as chess_router
 from app.routers.cnn import router as cnn_router
+from app.routers.craft import router as craft_router
 
 app = FastAPI(title="AI Arcade Portfolio API")
 
@@ -19,6 +20,7 @@ app.add_middleware(
 app.include_router(chess_router)
 app.include_router(cnn_router)
 app.include_router(bj_router)
+app.include_router(craft_router)
 
 @app.get("/")
 async def root():

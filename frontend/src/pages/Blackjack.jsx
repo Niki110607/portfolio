@@ -73,13 +73,6 @@ export default function BlackjackPage() {
       <main className="flex-1 max-w-7xl w-full mx-auto p-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* LEFT COLUMN: Interactive Playing Board & Minimal Model Output (7 Cols) */}
         <section className="lg:col-span-7 flex flex-col items-center bg-color-secondary border border-color-border/80 rounded-2xl p-8 lg:p-10 shadow-xl w-full">
-          {/* Section Heading */}
-          <div className="w-full mb-6 border-b border-color-border/40 pb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold tracking-tight">
-              Play Blackjack
-            </h2>
-          </div>
-
           <div className="flex flex-col items-center gap-6 w-full">
             {/* Playing Board Workspace */}
             <div className="w-full flex justify-center">
