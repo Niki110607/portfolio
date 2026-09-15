@@ -4,197 +4,268 @@ import ChessBoard from "../components/ChessBoard";
 
 export default function ChessPage() {
   const [evalScore, setEvalScore] = useState(0.0);
-  const [showEval, setShowEval] = useState(false);
+  const [showEval, setShowEval] = useState(true);
+  const [showTechDetails, setShowTechDetails] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
+  const [boardKey, setBoardKey] = useState(0);
+
+  const handleReset = () => {
+    setBoardKey((prev) => prev + 1);
+    setEvalScore(0.0);
+  };
+
+  // Convert raw eval score (-10 to +10 range) into gauge percentage (5% to 95%)
+  const evalPercentage = Math.min(
+    Math.max(((evalScore + 5) / 10) * 100, 5),
+    95,
+  );
 
   return (
-    <div className="min-h-screen bg-color-main text-color-text flex flex-col font-sans">
-      {/* 1. Header Navigation */}
-      <header className="border-b border-color-border/60 bg-color-secondary/80 px-6 py-4 flex items-center justify-between">
+    <div
+      data-theme="chess"
+      className="min-h-screen bg-[var(--bg-main,#09090b)] text-[var(--color-text,#f4f4f5)] flex flex-col font-sans selection:bg-[var(--color-accent-glow)] selection:text-[var(--color-accent)] relative overflow-x-hidden"
+    >
+      {/* Ambient Background Radial Glow */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-[var(--color-accent-glow)] blur-[220px] opacity-20 pointer-events-none" />
+
+      {/* Minimal Top Header */}
+      <header className="w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between relative z-10">
         <Link
           to="/"
-          className="text-sm font-medium text-color-text/70 hover:text-color-accent transition flex items-center gap-2"
+          className="text-xs font-mono text-zinc-500 hover:text-white transition-colors flex items-center gap-2 group"
         >
-          ← Back to Portfolio
+          <span className="group-hover:-translate-x-1 transition-transform">
+            ←
+          </span>{" "}
+          Portfolio
         </Link>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-mono text-zinc-400 uppercase tracking-widest">
+            MCTS + Transformer Engine
+          </span>
+        </div>
       </header>
 
-      {/* 2. Main Workspace */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* LEFT COLUMN: Interactive Board & Controls (7 Cols) */}
-        <section className="lg:col-span-7 flex flex-col items-center bg-color-secondary border border-color-border/80 rounded-2xl p-10 shadow-xl w-full">
-          {/* Board & Eval Bar Workspace */}
-          <div className="flex flex-row items-center justify-center gap-4 w-full">
-            {/* Chess Board Container */}
-            <div className="w-full max-w-xs sm:max-w-md lg:max-w-lg aspect-square rounded-xl overflow-hidden shadow-2xl border border-color-border/50">
-              <ChessBoard onEvalUpdate={setEvalScore} />
+      {/* CENTER STAGE WORKBENCH */}
+      <main className="flex-1 max-w-4xl w-full mx-auto px-6 flex flex-col items-center justify-center relative z-10 py-6">
+        {/* Page Title Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+            Transformer Chess Engine
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 font-mono">
+            6.5M parameter neural network powered by Monte Carlo Tree Search
+          </p>
+        </div>
+
+        {/* Hero Board Stage */}
+        <div className="w-full flex flex-col items-center gap-6">
+          {/* Workspace Status Bar */}
+          <div className="flex items-center justify-between w-full max-w-xl text-[11px] font-mono text-zinc-500 px-1">
+            <span>BOARD WORKSPACE</span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
+              <span className="text-zinc-300">Engine Ready</span>
+            </div>
+          </div>
+
+          {/* Centered Board + Telemetry Eval Gauge */}
+          <div className="flex flex-row items-stretch justify-center gap-4 sm:gap-6 w-full max-w-xl">
+            {/* Expanded Hero Chessboard */}
+            <div className="flex-1 aspect-square rounded-2xl overflow-hidden shadow-2xl border border-zinc-800/80 bg-black">
+              <ChessBoard key={boardKey} onEvalUpdate={setEvalScore} />
             </div>
 
-            {/* Evaluation Bar */}
+            {/* Vertical Telemetry Evaluation Bar */}
             {showEval && (
-              <div className="flex flex-col items-center self-stretch">
-                <div className="relative w-3.5 flex-1 bg-color-main rounded-full overflow-hidden border border-color-border/60">
+              <div className="flex flex-col items-center justify-between w-10 py-3 bg-zinc-950/80 border border-zinc-800/80 rounded-2xl shadow-inner relative">
+                {/* Floating Score Readout */}
+                <span className="text-[10px] font-mono font-bold text-zinc-300 z-10">
+                  {evalScore > 0
+                    ? `+${evalScore.toFixed(1)}`
+                    : evalScore.toFixed(1)}
+                </span>
+
+                {/* Vertical Gauge Channel */}
+                <div className="w-2 flex-1 bg-zinc-900 rounded-full overflow-hidden relative my-2 border border-white/5">
+                  <div className="absolute top-1/2 w-full h-[1px] bg-zinc-500/60 z-10" />
                   <div
-                    className="absolute bottom-0 w-full bg-color-accent transition-all duration-500 rounded-b-full"
-                    style={{
-                      height: `${Math.min(
-                        Math.max(((evalScore + 5) / 10) * 100, 5),
-                        95,
-                      )}%`,
-                    }}
+                    className="absolute bottom-0 w-full bg-[var(--color-accent)] transition-all duration-500 rounded-b-full shadow-[0_0_10px_var(--color-accent)]"
+                    style={{ height: `${evalPercentage}%` }}
                   />
                 </div>
+
+                <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-tight">
+                  EVAL
+                </span>
               </div>
             )}
           </div>
 
-          {/* Controls Bar */}
-          <div className="w-full max-w-xs sm:max-w-md flex items-center gap-3 mt-6">
+          {/* Compact Telemetry Badge Bar (Replaces cluttered text boxes) */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl pt-2">
+            <div className="bg-zinc-900/50 border border-zinc-800/60 px-3 py-2 rounded-xl text-center">
+              <div className="text-[9px] font-mono text-zinc-500 uppercase">
+                Model Size
+              </div>
+              <div className="text-xs font-mono font-bold text-white mt-0.5">
+                6.5M Params
+              </div>
+            </div>
+            <div className="bg-zinc-900/50 border border-zinc-800/60 px-3 py-2 rounded-xl text-center">
+              <div className="text-[9px] font-mono text-zinc-500 uppercase">
+                Dataset
+              </div>
+              <div className="text-xs font-mono font-bold text-white mt-0.5">
+                10M Positions
+              </div>
+            </div>
+            <div className="bg-zinc-900/50 border border-zinc-800/60 px-3 py-2 rounded-xl text-center">
+              <div className="text-[9px] font-mono text-zinc-500 uppercase">
+                Speed
+              </div>
+              <div className="text-xs font-mono font-bold text-white mt-0.5">
+                1,000 pos/sec
+              </div>
+            </div>
+            <div className="bg-zinc-900/50 border border-zinc-800/60 px-3 py-2 rounded-xl text-center">
+              <div className="text-[9px] font-mono text-zinc-500 uppercase">
+                Strength
+              </div>
+              <div className="text-xs font-mono font-bold font-mono text-[var(--color-accent)] mt-0.5">
+                2200-2400 ELO
+              </div>
+            </div>
+          </div>
+
+          {/* Action Control Pills */}
+          <div className="flex items-center gap-3 w-full max-w-xl mt-1">
             <button
-              className="flex-1 py-2 px-4 bg-color-main/60 hover:border-color-accent border border-color-border/60 rounded-lg text-sm font-mono transition"
-              onClick={() => window.location.reload()}
+              onClick={handleReset}
+              className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-mono font-medium text-zinc-300 hover:text-white transition active:scale-95"
             >
               Reset Board
             </button>
             <button
               onClick={() => setShowEval((prev) => !prev)}
-              className="flex-1 py-2 px-4 bg-color-main/60 hover:border-color-accent border border-color-border/60 rounded-lg text-sm font-mono transition"
+              className={`flex-1 py-2.5 px-4 rounded-xl border text-xs font-mono font-medium transition active:scale-95 ${
+                showEval
+                  ? "bg-[var(--color-accent-glow)] border-[var(--color-accent)]/40 text-[var(--color-accent)]"
+                  : "bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-300 hover:text-white"
+              }`}
             >
-              {showEval ? "Hide Eval Bar" : "Show Eval Bar"}
+              {showEval ? "Hide Evaluation" : "Show Evaluation"}
             </button>
           </div>
-        </section>
+        </div>
 
-        {/* RIGHT COLUMN: Technical Showcase & Details (5 Cols) */}
-        <section className="lg:col-span-5 flex flex-col gap-10">
-          {/* Project Header Card */}
-          <div className="bg-color-secondary border border-color-border/80 rounded-2xl p-6 shadow-xl">
-            <h1 className="text-2xl font-bold tracking-tight mb-2">
-              Transformer Chess Engine
-            </h1>
-            <p className="text-sm text-color-text/70 leading-relaxed">
-              A neural chess engine pairing a 6.5M parameter Transformer with
-              Monte Carlo Tree Search (MCTS) to predict move policy
-              distributions and positional evaluations.
-            </p>
+        {/* Technical Specs Toggle Button (Identical to CNN page) */}
+        <button
+          onClick={() => setShowTechDetails((prev) => !prev)}
+          className="mt-12 text-xs font-mono text-zinc-500 hover:text-zinc-200 transition-colors flex items-center gap-2 py-2 px-4 rounded-full border border-zinc-800/80 hover:border-zinc-700 bg-zinc-900/40"
+        >
+          <span>
+            {showTechDetails ? "Hide Engine Specs" : "Inspect Engine Specs"}
+          </span>
+          <span
+            className={`transition-transform duration-200 ${
+              showTechDetails ? "rotate-180" : ""
+            }`}
+          >
+            ↓
+          </span>
+        </button>
+      </main>
 
-            {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-6">
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Model Size
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  6.5M Params
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Dataset
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  10M Positions
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Search Speed
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  1,000 pos/sec
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Playing Strength
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  2200-2400 ELO
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Tabbed Technical Deep-Dive Card */}
-          <div className="bg-color-secondary border border-color-border/80 rounded-2xl p-6 shadow-xl">
-            {/* Tab Controls */}
-            <div className="flex border-b border-color-border/60 pb-3 gap-4 mb-4 text-sm font-mono">
+      {/* Collapsible Architecture Footer */}
+      {showTechDetails && (
+        <footer className="w-full bg-zinc-950/90 border-t border-zinc-800/80 backdrop-blur-xl relative z-10 py-10 animate-in fade-in duration-300">
+          <div className="max-w-4xl mx-auto px-6">
+            {/* Footer Tab Headers */}
+            <div className="flex border-b border-zinc-800/80 pb-3 gap-6 text-xs font-mono mb-6">
               <button
                 onClick={() => setActiveTab("overview")}
                 className={`pb-1 transition border-b-2 ${
                   activeTab === "overview"
-                    ? "border-color-accent text-color-accent font-semibold"
-                    : "border-transparent text-color-text/60 hover:text-color-text"
+                    ? "border-[var(--color-accent)] text-[var(--color-accent)] font-bold"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300"
                 }`}
               >
-                Architecture
+                Transformer Architecture
               </button>
               <button
                 onClick={() => setActiveTab("mcts")}
                 className={`pb-1 transition border-b-2 ${
                   activeTab === "mcts"
-                    ? "border-color-accent text-color-accent font-semibold"
-                    : "border-transparent text-color-text/60 hover:text-color-text"
+                    ? "border-[var(--color-accent)] text-[var(--color-accent)] font-bold"
+                    : "border-transparent text-zinc-500 hover:text-zinc-300"
                 }`}
               >
-                MCTS Search
+                MCTS Integration
               </button>
             </div>
 
             {/* Tab 1: Architecture */}
             {activeTab === "overview" && (
-              <div className="space-y-3 text-xs leading-relaxed text-color-text/80">
-                <p>
-                  The engine processes raw 8x8 board states through a
-                  Transformer encoder, producing dual outputs:
-                </p>
-                <ul className="list-disc pl-4 space-y-1 font-sans">
-                  <li>
-                    <strong className="text-color-text">
-                      Move Policy Head:
-                    </strong>{" "}
-                    Outputs a probability distribution across all theoretical
-                    legal moves to prioritize high-value candidates.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">
-                      Value Evaluation Head:
-                    </strong>{" "}
-                    Predicts expected win probability and numerical evaluation.
-                  </li>
-                </ul>
-                <p>
-                  Trained on <strong>10 million real Lichess positions</strong>,
-                  capturing both tactical patterns and positional dynamics.
-                </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-zinc-400">
+                <div className="space-y-2">
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+                    Move Policy Head
+                  </div>
+                  <p className="leading-relaxed">
+                    Outputs a probability distribution across all legal
+                    candidate move vectors to guide search priorities toward
+                    optimal tactical lines.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    Value Evaluation Head
+                  </div>
+                  <p className="leading-relaxed">
+                    Evaluates raw 8x8 spatial board state tensors to predict
+                    positional win probabilities and precise numerical eval
+                    metrics.
+                  </p>
+                </div>
               </div>
             )}
 
-            {/* Tab 2: MCTS Search */}
+            {/* Tab 2: MCTS */}
             {activeTab === "mcts" && (
-              <div className="space-y-3 text-xs leading-relaxed text-color-text/80">
-                <p>
-                  Instead of evaluating every node blindly, the engine embeds
-                  model predictions directly into a custom{" "}
-                  <strong>Monte Carlo Tree Search (MCTS)</strong> loop.
-                </p>
-                <ul className="list-disc pl-4 space-y-1 font-sans">
-                  <li>
-                    <strong className="text-color-text">Branch Pruning:</strong>{" "}
-                    Uses the policy distribution to skip unpromising candidate
-                    moves early.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">Throughput:</strong>{" "}
-                    Evaluates ~1,000 positions per second during real-time
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-zinc-400">
+                <div className="space-y-2">
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+                    Branch Pruning
+                  </div>
+                  <p className="leading-relaxed">
+                    Embeds neural priors directly into tree nodes to prune weak
+                    tactical variations early and focus search depth on winning
+                    lines.
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    High Throughput
+                  </div>
+                  <p className="leading-relaxed">
+                    Optimized vector evaluation loops enable real-time
+                    calculations up to 1,000 positions per second during active
                     gameplay.
-                  </li>
-                </ul>
+                  </p>
+                </div>
               </div>
             )}
           </div>
-        </section>
-      </main>
+        </footer>
+      )}
     </div>
   );
 }

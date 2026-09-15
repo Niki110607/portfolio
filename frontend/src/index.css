@@ -1,10 +1,30 @@
+/* index.css */
 @import "tailwindcss";
 
-@theme {
-  --color-color-main: #0f0f12;
-  --color-color-secondary: #1b1b22;
-  --color-color-accent: #00e5ff;
-  --color-color-text: #e5e7eb;
-  --color-color-title: #f9fafb;
-  --color-color-border: #1d4a50;
+:root {
+  --bg-main: #09090b;
+  --bg-surface: #141417;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #f4f4f5;
+}
+
+/* Scoped Theme Palettes */
+[data-theme="casino"] {
+  --color-accent: #10b981;
+  --color-accent-glow: rgba(16, 185, 129, 0.15);
+}
+
+[data-theme="chess"] {
+  --color-accent: #d97706;
+  --color-accent-glow: rgba(217, 119, 6, 0.15);
+}
+
+[data-theme="cnn"] {
+  --color-accent: #6366f1;
+  --color-accent-glow: rgba(99, 102, 241, 0.15);
+}
+
+[data-theme="craft"] {
+  --color-accent: #a855f7;
+  --color-accent-glow: rgba(168, 85, 247, 0.15);
 }
