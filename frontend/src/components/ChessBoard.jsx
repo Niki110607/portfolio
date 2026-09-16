@@ -8,10 +8,11 @@ const pieceImageSrc = (pieceCode) => `/chessPieces/${pieceCode}.svg`;
 
 const STARTING_POSITION = new Chess().fen();
 
-// Custom piece renderer with distinct drop-shadows for black and white SVG assets
+// Custom piece renderer
 const createPiece = (pieceCode) =>
   function ChessPiece({ svgStyle }) {
     const isBlack = pieceCode.startsWith("b");
+
     return (
       <div
         aria-hidden="true"
@@ -33,6 +34,12 @@ const createPiece = (pieceCode) =>
             height: "88%",
             userSelect: "none",
             pointerEvents: "none",
+
+            // Slightly softer depth so the pieces separate
+            // from the board without becoming flashy.
+            filter: isBlack
+              ? "drop-shadow(0 2px 2px rgba(0,0,0,0.45))"
+              : "drop-shadow(0 2px 2px rgba(0,0,0,0.28))",
           }}
         />
       </div>
@@ -54,15 +61,21 @@ export default function ChessBoard({
   resetSignal,
 }) {
   const chessGameRef = useRef(new Chess());
+
   const [chessPosition, setChessPosition] = useState(STARTING_POSITION);
+
   const [isThinking, setIsThinking] = useState(false);
+
   const [lastMove, setLastMove] = useState(null);
 
   useEffect(() => {
     chessGameRef.current = new Chess();
+
     setChessPosition(chessGameRef.current.fen());
+
     setLastMove(null);
     setIsThinking(false);
+
     onEvalUpdate?.(0);
     onStatusChange?.("Ready for your move");
   }, [resetSignal, onEvalUpdate, onStatusChange]);
@@ -77,19 +90,32 @@ export default function ChessBoard({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fen: chessGameRef.current.fen() }),
+        body: JSON.stringify({
+          fen: chessGameRef.current.fen(),
+        }),
       });
 
-      if (!response.ok) throw new Error("Engine request failed");
+      if (!response.ok) {
+        throw new Error("Engine request failed");
+      }
 
       const data = await response.json();
+
       const engineMove = chessGameRef.current.move(data.best_move);
 
-      if (!engineMove) throw new Error("Invalid engine move");
+      if (!engineMove) {
+        throw new Error("Invalid engine move");
+      }
 
       onEvalUpdate?.(data.evaluation);
-      setLastMove({ from: engineMove.from, to: engineMove.to });
+
+      setLastMove({
+        from: engineMove.from,
+        to: engineMove.to,
+      });
+
       setChessPosition(chessGameRef.current.fen());
+
       onStatusChange?.(
         chessGameRef.current.isGameOver()
           ? "Game complete"
@@ -103,7 +129,9 @@ export default function ChessBoard({
   };
 
   const onPieceDrop = ({ sourceSquare, targetSquare }) => {
-    if (!targetSquare || isThinking) return false;
+    if (!targetSquare || isThinking) {
+      return false;
+    }
 
     try {
       const playerMove = chessGameRef.current.move({
@@ -112,9 +140,15 @@ export default function ChessBoard({
         promotion: "q",
       });
 
-      if (!playerMove) return false;
+      if (!playerMove) {
+        return false;
+      }
 
-      setLastMove({ from: playerMove.from, to: playerMove.to });
+      setLastMove({
+        from: playerMove.from,
+        to: playerMove.to,
+      });
+
       setChessPosition(chessGameRef.current.fen());
 
       if (chessGameRef.current.isGameOver()) {
@@ -129,27 +163,119 @@ export default function ChessBoard({
     }
   };
 
-  // Move highlights tuned for the slate tile background
+  // Softer amber move indicators against
+  // the more neutral graphite board.
   const squareStyles = lastMove
     ? {
         [lastMove.from]: {
-          backgroundColor: "rgba(245, 158, 11, 0.22)",
+          backgroundColor: "rgba(217, 119, 6, 0.16)",
+          boxShadow: "inset 0 0 0 1px rgba(217,119,6,0.16)",
         },
+
         [lastMove.to]: {
-          backgroundColor: "rgba(245, 158, 11, 0.40)",
+          backgroundColor: "rgba(217, 119, 6, 0.34)",
+          boxShadow: "inset 0 0 0 1px rgba(217,119,6,0.22)",
         },
       }
     : {};
 
   return (
     <div
-      className="relative w-full aspect-square bg-zinc-950 p-2 rounded-2xl border border-zinc-800/80 shadow-2xl group"
-      style={{ containerType: "inline-size" }}
+      className="
+        relative
+        w-full
+        aspect-square
+        bg-zinc-950
+        p-2
+        rounded-2xl
+        border
+        border-zinc-800/80
+        shadow-2xl
+        group
+      "
+      style={{
+        containerType: "inline-size",
+      }}
     >
-      <div className="absolute top-1 left-1 w-2.5 h-2.5 border-t-2 border-l-2 border-amber-500/80 rounded-tl-sm opacity-60 group-hover:opacity-100 transition-opacity z-20" />
-      <div className="absolute top-1 right-1 w-2.5 h-2.5 border-t-2 border-r-2 border-amber-500/80 rounded-tr-sm opacity-60 group-hover:opacity-100 transition-opacity z-20" />
-      <div className="absolute bottom-1 left-1 w-2.5 h-2.5 border-b-2 border-l-2 border-amber-500/80 rounded-bl-sm opacity-60 group-hover:opacity-100 transition-opacity z-20" />
-      <div className="absolute bottom-1 right-1 w-2.5 h-2.5 border-b-2 border-r-2 border-amber-500/80 rounded-br-sm opacity-60 group-hover:opacity-100 transition-opacity z-20" />
+      {/* =========================================
+          SUBTLE AMBER CORNER MARKERS
+      ========================================== */}
+
+      <div
+        className="
+          absolute
+          top-1
+          left-1
+          w-2.5
+          h-2.5
+          border-t-2
+          border-l-2
+          border-amber-500/55
+          rounded-tl-sm
+          opacity-70
+          group-hover:opacity-100
+          transition-opacity
+          z-20
+        "
+      />
+
+      <div
+        className="
+          absolute
+          top-1
+          right-1
+          w-2.5
+          h-2.5
+          border-t-2
+          border-r-2
+          border-amber-500/55
+          rounded-tr-sm
+          opacity-70
+          group-hover:opacity-100
+          transition-opacity
+          z-20
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-1
+          left-1
+          w-2.5
+          h-2.5
+          border-b-2
+          border-l-2
+          border-amber-500/55
+          rounded-bl-sm
+          opacity-70
+          group-hover:opacity-100
+          transition-opacity
+          z-20
+        "
+      />
+
+      <div
+        className="
+          absolute
+          bottom-1
+          right-1
+          w-2.5
+          h-2.5
+          border-b-2
+          border-r-2
+          border-amber-500/55
+          rounded-br-sm
+          opacity-70
+          group-hover:opacity-100
+          transition-opacity
+          z-20
+        "
+      />
+
+      {/* =========================================
+          CHESSBOARD
+      ========================================== */}
 
       <Chessboard
         options={{
@@ -161,21 +287,39 @@ export default function ChessBoard({
           allowDrawingArrows: true,
           animationDurationInMs: 220,
           showNotation: true,
-          darkSquareStyle: { backgroundColor: "#2b303c" },
-          lightSquareStyle: { backgroundColor: "#4a5264" },
+
+          // Neutral graphite/slate palette.
+          // Less blue and less contrast than before,
+          // so the board integrates with the portfolio.
+          darkSquareStyle: {
+            backgroundColor: "#252932",
+          },
+
+          lightSquareStyle: {
+            backgroundColor: "#3f4551",
+          },
+
+          // Keep notation understated.
           darkSquareNotationStyle: {
-            color: "rgba(255, 255, 255, 0.35)",
+            color: "rgba(255,255,255,0.32)",
             fontSize: "10px",
           },
+
           lightSquareNotationStyle: {
-            color: "rgba(255, 255, 255, 0.25)",
+            color: "rgba(255,255,255,0.22)",
             fontSize: "10px",
           },
+
           boardStyle: {
             borderRadius: "0.75rem",
-            boxShadow: "inset 0 0 20px rgba(0, 0, 0, 0.9)",
+
+            // Reduced from the very heavy previous
+            // inner shadow.
+            boxShadow: "inset 0 0 16px rgba(0,0,0,0.48)",
+
             overflow: "hidden",
           },
+
           squareStyles,
         }}
       />

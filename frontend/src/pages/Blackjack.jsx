@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import PlayingBoard from "../components/PlayingBoard";
 
 export default function BlackjackPage() {
   const [hintData, setHintData] = useState(null);
+  const [showPolicy, setShowPolicy] = useState(true);
+  const [showTechDetails, setShowTechDetails] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
   const actionLabels = ["Stand", "Hit", "Double", "Split"];
@@ -14,327 +16,515 @@ export default function BlackjackPage() {
     }
   };
 
-  // Action Masking & Softmax Relative Weight Calculation
-  const getAnalysis = () => {
-    if (!hintData || !hintData.q_values) return null;
+  const analysis = useMemo(() => {
+    if (!hintData?.q_values) return null;
 
-    const { q_values: qValues, validActions } = hintData;
+    const qValues = hintData.q_values;
+    const validActions = hintData.validActions || {};
 
-    // Action validity mask: Stand and Hit are always valid during play; Double and Split depend on hand state
     const validFlags = [
       true,
       true,
-      validActions ? Boolean(validActions.double) : true,
-      validActions ? Boolean(validActions.split) : true,
+      Boolean(validActions.double ?? true),
+      Boolean(validActions.split ?? true),
     ];
 
-    // Mask Q-values for illegal actions (-Infinity) to compute optimal move
-    const maskedQValues = qValues.map((q, idx) =>
-      validFlags[idx] ? q : -Infinity,
+    const maskedQValues = qValues.map((q, index) =>
+      validFlags[index] ? q : -Infinity,
     );
-    const maxQ = Math.max(...maskedQValues);
-    const bestActionIdx = maskedQValues.indexOf(maxQ);
 
-    // Numerically stable masked Softmax computation over legal actions
-    const validQValues = qValues.filter((_, idx) => validFlags[idx]);
+    const maxQ = Math.max(...maskedQValues);
+    const bestActionIdx = maxQ === -Infinity ? -1 : maskedQValues.indexOf(maxQ);
+
+    const validQValues = qValues.filter((_, index) => validFlags[index]);
     const maxValidQ = Math.max(...validQValues);
 
-    const expValues = qValues.map((q, idx) =>
-      validFlags[idx] ? Math.exp(q - maxValidQ) : 0,
+    const expValues = qValues.map((q, index) =>
+      validFlags[index] ? Math.exp(q - maxValidQ) : 0,
     );
-    const sumExp = expValues.reduce((sum, val) => sum + val, 0);
 
-    const probabilities = expValues.map((exp, idx) =>
-      validFlags[idx] && sumExp > 0 ? exp / sumExp : 0,
+    const sumExp = expValues.reduce((sum, value) => sum + value, 0);
+
+    const probabilities = expValues.map((value, index) =>
+      validFlags[index] && sumExp > 0 ? value / sumExp : 0,
     );
 
     return {
-      bestActionIdx: maxQ === -Infinity ? -1 : bestActionIdx,
+      bestActionIdx,
       probabilities,
       validFlags,
     };
-  };
-
-  const analysis = getAnalysis();
+  }, [hintData]);
 
   return (
-    <div className="min-h-screen bg-color-main text-color-text flex flex-col font-sans">
-      {/* 1. Header Navigation */}
-      <header className="border-b border-color-border/60 bg-color-secondary/80 px-6 py-4 flex items-center justify-between">
+    <div
+      data-theme="casino"
+      className="
+        min-h-screen
+        bg-[var(--bg-main,#09090b)]
+        text-[var(--color-text,#f4f4f5)]
+        flex flex-col
+        font-sans
+        selection:bg-emerald-500/20
+        selection:text-emerald-400
+        relative
+        overflow-x-hidden
+      "
+    >
+      {/* Ambient system glow */}
+      <div
+        className="
+          fixed
+          top-1/2
+          left-1/2
+          -translate-x-1/2
+          -translate-y-1/2
+          w-[900px]
+          h-[900px]
+          rounded-full
+          bg-emerald-500/[0.035]
+          blur-[220px]
+          pointer-events-none
+        "
+      />
+
+      {/* Top navigation */}
+      <header className="w-full max-w-6xl mx-auto px-6 sm:px-8 py-6 flex items-center justify-between relative z-10">
         <Link
           to="/"
-          className="text-sm font-medium text-color-text/70 hover:text-color-accent transition flex items-center gap-2"
+          className="
+            text-xs
+            font-mono
+            text-zinc-500
+            hover:text-white
+            transition-colors
+            flex
+            items-center
+            gap-2
+            group
+          "
         >
-          ← Back to Portfolio
+          <span className="group-hover:-translate-x-1 transition-transform">
+            ←
+          </span>
+          Portfolio
         </Link>
+
+        <span className="text-[10px] sm:text-xs font-mono text-zinc-400 uppercase tracking-[0.18em]">
+          DQN + Gymnasium Engine
+        </span>
       </header>
 
-      {/* 2. Main Workspace */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-        {/* LEFT COLUMN: Interactive Playing Board & Minimal Model Output (7 Cols) */}
-        <section className="lg:col-span-7 flex flex-col items-center bg-color-secondary border border-color-border/80 rounded-2xl p-8 lg:p-10 shadow-xl w-full">
-          <div className="flex flex-col items-center gap-6 w-full">
-            {/* Playing Board Workspace */}
-            <div className="w-full flex justify-center">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 pb-16 relative z-10">
+        {/* Page heading */}
+        <div className="text-center pt-10 sm:pt-14 pb-10 sm:pb-12">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white">
+            Deep Q-Network Blackjack
+          </h1>
+
+          <p className="mt-3 text-xs sm:text-sm text-zinc-400 font-mono">
+            Reinforcement Learning agent trained on 3M hands in custom Gym
+            environment
+          </p>
+        </div>
+
+        {/* Workspace header */}
+        <div className="flex items-center justify-between mb-3 px-1">
+          <span className="text-[10px] sm:text-[11px] font-mono text-zinc-500 uppercase tracking-[0.14em]">
+            Table Workspace
+          </span>
+
+          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-zinc-300">Engine Ready</span>
+          </div>
+        </div>
+
+        {/* Main workspace */}
+        <section
+          className="
+            w-full
+            border-t
+            border-b
+            border-zinc-800/80
+            py-4
+            sm:py-5
+          "
+        >
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_220px]">
+            {/* Game stage */}
+            <div className="min-w-0 pr-0 lg:pr-7">
               <PlayingBoard onHint={handleData} />
             </div>
 
-            {/* Minimal Live Model Recommendation Card */}
-            <div className="w-full bg-color-main/60 border border-color-border/60 p-5 rounded-xl flex flex-col gap-4">
-              {/* Card Header & Dominant Recommendation Badge */}
-              <div className="flex items-center justify-between border-b border-color-border/40 pb-3">
-                <span className="text-xs font-mono text-color-text/50 uppercase tracking-wider">
-                  DQN Action Policy
+            {/* Policy telemetry rail */}
+            <aside
+              className={`
+                ${showPolicy ? "block" : "hidden"}
+                mt-5
+                lg:mt-0
+                lg:border-l
+                border-zinc-800/80
+                pt-6
+                lg:pt-2
+                lg:pl-6
+              `}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.14em]">
+                  AI Policy
                 </span>
 
                 {analysis && analysis.bestActionIdx !== -1 ? (
-                  <span className="text-xs font-mono font-bold text-color-accent bg-color-accent/10 px-3 py-1 rounded-full border border-color-accent/30 uppercase tracking-wider">
-                    Optimal: {actionLabels[analysis.bestActionIdx]}
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                    Live
                   </span>
                 ) : (
-                  <span className="text-xs font-mono text-color-text/40">
-                    Click "Hint" during turn
+                  <span className="text-[10px] font-mono text-zinc-600 uppercase">
+                    Waiting
                   </span>
                 )}
               </div>
 
-              {/* Minimal Action Visual Bars */}
-              <div className="flex flex-col gap-2.5">
-                {actionLabels.map((action, idx) => {
-                  const isLegal = analysis ? analysis.validFlags[idx] : true;
+              <div className="space-y-4">
+                {actionLabels.map((action, index) => {
+                  const isLegal = analysis ? analysis.validFlags[index] : true;
+
                   const isBest =
-                    analysis && analysis.bestActionIdx === idx && isLegal;
-                  const prob = analysis ? analysis.probabilities[idx] : 0;
+                    analysis && analysis.bestActionIdx === index && isLegal;
+
+                  const probability = analysis
+                    ? analysis.probabilities[index]
+                    : 0;
+
+                  const percentage = isLegal
+                    ? Math.round(probability * 100)
+                    : 0;
 
                   return (
-                    <div
-                      key={action}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-all ${
-                        !isLegal
-                          ? "opacity-30 bg-color-secondary/10"
-                          : isBest
-                            ? "bg-color-secondary border border-color-accent/40 shadow-sm"
-                            : "bg-color-secondary/30"
-                      }`}
-                    >
-                      {/* Action Label */}
-                      <span
-                        className={`w-16 text-xs font-mono uppercase ${
-                          isBest
-                            ? "font-bold text-color-accent"
-                            : isLegal
-                              ? "font-semibold text-color-text/80"
-                              : "text-color-text/40"
-                        }`}
-                      >
-                        {action}
-                      </span>
+                    <div key={action}>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span
+                          className={`
+                            text-[10px]
+                            font-mono
+                            uppercase
+                            tracking-wider
+                            ${
+                              isBest
+                                ? "text-emerald-400 font-bold"
+                                : isLegal
+                                  ? "text-zinc-300"
+                                  : "text-zinc-700"
+                            }
+                          `}
+                        >
+                          {action}
+                        </span>
 
-                      {/* Visual Relative Probability Bar */}
-                      <div className="flex-1 bg-color-main h-2 rounded-full overflow-hidden border border-color-border/40">
+                        <span
+                          className={`
+                            text-[10px]
+                            font-mono
+                            ${
+                              isBest
+                                ? "text-emerald-400 font-bold"
+                                : isLegal
+                                  ? "text-zinc-500"
+                                  : "text-zinc-700"
+                            }
+                          `}
+                        >
+                          {!isLegal ? "N/A" : `${percentage}%`}
+                        </span>
+                      </div>
+
+                      <div className="h-1 bg-zinc-900 overflow-hidden rounded-full">
                         <div
-                          className={`h-full transition-all duration-300 ${
-                            isBest
-                              ? "bg-color-accent"
-                              : isLegal
-                                ? "bg-color-text/40"
-                                : "bg-transparent"
-                          }`}
+                          className={`
+                            h-full
+                            rounded-full
+                            transition-all
+                            duration-500
+                            ${
+                              isBest
+                                ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"
+                                : isLegal
+                                  ? "bg-zinc-700"
+                                  : "bg-transparent"
+                            }
+                          `}
                           style={{
-                            width: `${isLegal ? (prob * 100).toFixed(1) : 0}%`,
+                            width: `${percentage}%`,
                           }}
                         />
                       </div>
-
-                      {/* Status Tag for N/A Actions */}
-                      {!isLegal && (
-                        <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/10 border border-red-500/20 text-red-400">
-                          N/A
-                        </span>
-                      )}
                     </div>
                   );
                 })}
               </div>
-            </div>
+
+              <div className="mt-8 pt-5 border-t border-zinc-800/70">
+                <span className="block text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-600 mb-2">
+                  Recommendation
+                </span>
+
+                <div className="text-xl font-mono font-bold text-white">
+                  {analysis && analysis.bestActionIdx !== -1
+                    ? actionLabels[analysis.bestActionIdx]
+                    : "—"}
+                </div>
+
+                <p className="mt-2 text-[10px] leading-relaxed text-zinc-600 font-mono">
+                  Ask the trained agent for its current action distribution.
+                </p>
+              </div>
+            </aside>
           </div>
         </section>
 
-        {/* RIGHT COLUMN: Technical Showcase & Details (5 Cols) */}
-        <section className="lg:col-span-5 flex flex-col gap-10">
-          {/* Project Header Card */}
-          <div className="bg-color-secondary border border-color-border/80 rounded-2xl p-6 shadow-xl">
-            <h1 className="text-2xl font-bold tracking-tight mb-2">
-              Blackjack RL Agent
-            </h1>
-            <p className="text-sm text-color-text/70 leading-relaxed">
-              A fullstack Reinforcement Learning project featuring a Deep
-              Q-Network (DQN) agent trained to play Blackjack optimally in a
-              custom Gymnasium environment supporting splits and double downs.
-            </p>
+        {/* Policy visibility control */}
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={() => setShowPolicy((prev) => !prev)}
+            className={`
+              text-[10px]
+              sm:text-xs
+              font-mono
+              uppercase
+              tracking-wider
+              py-2
+              px-4
+              border
+              rounded-full
+              transition-all
+              ${
+                showPolicy
+                  ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/[0.05]"
+                  : "border-zinc-800 text-zinc-500 hover:text-zinc-200 hover:border-zinc-700"
+              }
+            `}
+          >
+            {showPolicy ? "Hide Policy HUD" : "Show Policy HUD"}
+          </button>
+        </div>
 
-            {/* Quick Metrics Grid */}
-            <div className="grid grid-cols-2 gap-3 mt-6">
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Training
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  3M Hands
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Winrate
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  43.7%
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Expected Value
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  ~0.00 EV
-                </div>
-              </div>
-              <div className="bg-color-main/60 p-3 rounded-xl border border-color-border/40">
-                <div className="text-xs text-color-text/50 font-mono">
-                  Framework
-                </div>
-                <div className="text-lg font-semibold font-mono text-color-accent">
-                  PyTorch
-                </div>
-              </div>
+        {/* Flat telemetry strip */}
+        <div
+          className="
+            w-full
+            max-w-5xl
+            mx-auto
+            mt-10
+            py-5
+            border-y
+            border-zinc-800/70
+            grid
+            grid-cols-2
+            sm:grid-cols-4
+            gap-y-5
+            sm:gap-y-0
+          "
+        >
+          <div className="text-center sm:border-r border-zinc-800/70">
+            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+              Training Volume
+            </div>
+            <div className="mt-1 text-sm font-mono font-bold text-white">
+              3.0M Hands
             </div>
           </div>
 
-          {/* Tabbed Technical Deep-Dive Card */}
-          <div className="bg-color-secondary border border-color-border/80 rounded-2xl p-6 shadow-xl">
-            {/* Tab Controls */}
-            <div className="flex border-b border-color-border/60 pb-3 gap-4 mb-4 text-sm font-mono">
-              <button
-                onClick={() => setActiveTab("overview")}
-                className={`pb-1 transition border-b-2 ${
-                  activeTab === "overview"
-                    ? "border-color-accent text-color-accent font-semibold"
-                    : "border-transparent text-color-text/60 hover:text-color-text"
-                }`}
-              >
-                Architecture
-              </button>
-              <button
-                onClick={() => setActiveTab("env")}
-                className={`pb-1 transition border-b-2 ${
-                  activeTab === "env"
-                    ? "border-color-accent text-color-accent font-semibold"
-                    : "border-transparent text-color-text/60 hover:text-color-text"
-                }`}
-              >
-                Environment
-              </button>
-              <button
-                onClick={() => setActiveTab("performance")}
-                className={`pb-1 transition border-b-2 ${
-                  activeTab === "performance"
-                    ? "border-color-accent text-color-accent font-semibold"
-                    : "border-transparent text-color-text/60 hover:text-color-text"
-                }`}
-              >
-                Performance
-              </button>
+          <div className="text-center sm:border-r border-zinc-800/70">
+            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+              Win Rate
             </div>
-
-            {/* Tab 1: Architecture */}
-            {activeTab === "overview" && (
-              <div className="space-y-3 text-xs leading-relaxed text-color-text/80">
-                <p>
-                  Implements a Deep Q-Network (DQN) designed to approximate
-                  optimal state-action value functions across complex hand
-                  configurations:
-                </p>
-                <ul className="list-disc pl-4 space-y-1.5 font-sans">
-                  <li>
-                    <strong className="text-color-text">
-                      Experience Replay:
-                    </strong>{" "}
-                    Stores state transitions in a replay buffer to break
-                    temporal correlations between consecutive steps.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">Target Network:</strong>{" "}
-                    Uses a periodically synchronized target network to stabilize
-                    temporal-difference target values during optimization.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">Action Masking:</strong>{" "}
-                    Filters out illegal actions (Double/Split after initial
-                    moves) prior to policy recommendation inference.
-                  </li>
-                </ul>
-              </div>
-            )}
-
-            {/* Tab 2: Environment */}
-            {activeTab === "env" && (
-              <div className="space-y-3 text-xs leading-relaxed text-color-text/80">
-                <p>
-                  A custom Gymnasium-inspired environment built to accommodate
-                  extended action rulesets and tailored reward structures:
-                </p>
-                <ul className="list-disc pl-4 space-y-1.5 font-sans">
-                  <li>
-                    <strong className="text-color-text">
-                      Extended Action Space:
-                    </strong>{" "}
-                    Supports standard Stand (S) and Hit (H) alongside Double
-                    Down (D) and Pair Splitting (P).
-                  </li>
-                  <li>
-                    <strong className="text-color-text">
-                      Ruleset Configuration:
-                    </strong>{" "}
-                    Single deck reshuffled every deal, dealer stands on soft 17,
-                    and natural Blackjacks pay out at 3:2.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">
-                      Reward Alignment:
-                    </strong>{" "}
-                    Calibrated terminal payoffs directly reflecting expected
-                    monetary returns per unit bet.
-                  </li>
-                </ul>
-              </div>
-            )}
-
-            {/* Tab 3: Performance */}
-            {activeTab === "performance" && (
-              <div className="space-y-3 text-xs leading-relaxed text-color-text/80">
-                <p>
-                  After 3 million training hands, the agent converged to optimal
-                  play matching mathematical basic strategy:
-                </p>
-                <ul className="list-disc pl-4 space-y-1.5 font-sans">
-                  <li>
-                    <strong className="text-color-text">Winrate & EV:</strong>{" "}
-                    Achieves a 43.7% winrate with an expected value near zero
-                    (~0.00 EV), effectively eliminating house edge.
-                  </li>
-                  <li>
-                    <strong className="text-color-text">
-                      Strategy Convergence:
-                    </strong>{" "}
-                    Learned Q-table outputs for all action combinations mirror
-                    statistically proven basic strategy tables.
-                  </li>
-                </ul>
-              </div>
-            )}
+            <div className="mt-1 text-sm font-mono font-bold text-white">
+              43.7%
+            </div>
           </div>
-        </section>
+
+          <div className="text-center sm:border-r border-zinc-800/70">
+            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+              Expected Return
+            </div>
+            <div className="mt-1 text-sm font-mono font-bold text-emerald-400">
+              ~0.00 EV
+            </div>
+          </div>
+
+          <div className="text-center">
+            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+              Framework
+            </div>
+            <div className="mt-1 text-sm font-mono font-bold text-white">
+              PyTorch / Gym
+            </div>
+          </div>
+        </div>
+
+        {/* Technical details trigger */}
+        <div className="flex justify-center mt-10">
+          <button
+            onClick={() => setShowTechDetails((prev) => !prev)}
+            className="
+              text-xs
+              font-mono
+              text-zinc-500
+              hover:text-zinc-200
+              transition-colors
+              flex
+              items-center
+              gap-2
+              py-2
+              px-4
+              rounded-full
+              border
+              border-zinc-800
+              hover:border-zinc-700
+              bg-zinc-900/30
+            "
+          >
+            <span>
+              {showTechDetails ? "Hide Engine Specs" : "Inspect Engine Specs"}
+            </span>
+
+            <span
+              className={`transition-transform duration-200 ${
+                showTechDetails ? "rotate-180" : ""
+              }`}
+            >
+              ↓
+            </span>
+          </button>
+        </div>
       </main>
+
+      {/* Technical drawer */}
+      {showTechDetails && (
+        <footer
+          className="
+            w-full
+            bg-zinc-950/90
+            border-t
+            border-zinc-800/80
+            backdrop-blur-xl
+            relative
+            z-10
+            py-10
+          "
+        >
+          <div className="max-w-5xl mx-auto px-6 sm:px-8">
+            <div className="flex overflow-x-auto border-b border-zinc-800/80 gap-6 text-xs font-mono mb-6">
+              {[
+                ["overview", "DQN Architecture"],
+                ["env", "Gym Environment"],
+                ["performance", "Strategy Convergence"],
+              ].map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => setActiveTab(id)}
+                  className={`
+                    pb-3
+                    whitespace-nowrap
+                    border-b-2
+                    transition
+                    ${
+                      activeTab === id
+                        ? "border-emerald-400 text-emerald-400 font-bold"
+                        : "border-transparent text-zinc-500 hover:text-zinc-300"
+                    }
+                  `}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {activeTab === "overview" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Replay Memory Buffer
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Stores 100,000 state transitions to sample decorrelated
+                    minibatches during gradient updates, stabilizing temporal
+                    Q-learning.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    Dynamic Action Masking
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Evaluates valid hand flags prior to Softmax calculation,
+                    zeroing out illegal actions like Double Down or Split after
+                    the initial draw.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "env" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Extended Ruleset Gym
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Custom Gymnasium environment built with full rule mechanics:
+                    Stand, Hit, Double Down, and Pair Splitting with dealer
+                    standing on soft 17.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-amber-400" />
+                    3:2 Reward Calibration
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Terminal payoffs directly model casino-style expected
+                    returns per unit bet, including standard bonuses on natural
+                    Blackjacks.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === "performance" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                    Basic Strategy Mirroring
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Learned policy outputs converge toward established Blackjack
+                    basic strategy decisions across the represented state space.
+                  </p>
+                </div>
+
+                <div>
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-purple-400" />
+                    Expected Return
+                  </div>
+                  <p className="mt-2 leading-relaxed">
+                    Training reduces sub-optimal player decisions and drives the
+                    learned policy toward its long-run reward baseline.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </footer>
+      )}
     </div>
   );
 }

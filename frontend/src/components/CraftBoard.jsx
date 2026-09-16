@@ -11,14 +11,13 @@ export default function CraftBoard() {
   const [sidebarItems, setSidebarItems] = useState(INITIAL_ELEMENTS);
   const [boardItems, setBoardItems] = useState([]);
   const [draggedItem, setDraggedItem] = useState(null);
-  const [combiningIds, setCombiningIds] = useState([]); // Tracks items awaiting API response
+  const [combiningIds, setCombiningIds] = useState([]);
 
   const mainAreaRef = useRef(null);
 
-  // Calculates viewport offset for the ghost element following the cursor
   const getViewportPosition = (e, targetElement) => {
-    const itemWidth = targetElement?.offsetWidth || 110;
-    const itemHeight = targetElement?.offsetHeight || 38;
+    const itemWidth = targetElement?.offsetWidth || 92;
+    const itemHeight = targetElement?.offsetHeight || 62;
 
     return {
       x: e.clientX - itemWidth / 2,
@@ -26,12 +25,15 @@ export default function CraftBoard() {
     };
   };
 
-  // Calculates position relative to the #main-area canvas
   const getCanvasRelativePosition = (e, targetElement) => {
-    if (!mainAreaRef.current) return { x: 0, y: 0 };
+    if (!mainAreaRef.current) {
+      return { x: 0, y: 0 };
+    }
+
     const rect = mainAreaRef.current.getBoundingClientRect();
-    const itemWidth = targetElement?.offsetWidth || 110;
-    const itemHeight = targetElement?.offsetHeight || 38;
+
+    const itemWidth = targetElement?.offsetWidth || 92;
+    const itemHeight = targetElement?.offsetHeight || 62;
 
     return {
       x: e.clientX - rect.left - itemWidth / 2,
@@ -39,10 +41,11 @@ export default function CraftBoard() {
     };
   };
 
-  // Helper checking if mouse coordinates are inside canvas area
   const mouseInObject = (e, element) => {
     if (!element) return false;
+
     const rect = element.getBoundingClientRect();
+
     return (
       e.clientX >= rect.left &&
       e.clientX <= rect.right &&
@@ -51,23 +54,26 @@ export default function CraftBoard() {
     );
   };
 
-  // Mouse Down Handler for picking up items from inventory or board
   const handleMouseDown = (e) => {
     const clickedItemNode = e.target.closest(".sidebar-card, .board-card");
+
     if (!clickedItemNode) return;
 
     const emoji = clickedItemNode.dataset.emoji;
     const name = clickedItemNode.dataset.name;
+
     const isBoardItem = clickedItemNode.classList.contains("board-card");
+
     const boardId = clickedItemNode.dataset.id;
 
-    // Ignore clicks on items currently combining
-    if (isBoardItem && combiningIds.includes(boardId)) return;
+    if (isBoardItem && combiningIds.includes(boardId)) {
+      return;
+    }
 
     const pos = getViewportPosition(e, clickedItemNode);
 
     setDraggedItem({
-      id: isBoardItem ? boardId : Date.now().toString(),
+      id: isBoardItem ? boardId : `${Date.now()}-${Math.random()}`,
       name,
       emoji,
       x: pos.x,
@@ -79,15 +85,23 @@ export default function CraftBoard() {
     }
   };
 
-  // Global Window Event Listeners
   useEffect(() => {
     if (!draggedItem) return;
 
     const handleWindowMouseMove = (e) => {
       const draggedNode = document.getElementById("dragged-card-ghost");
+
       const pos = getViewportPosition(e, draggedNode);
 
-      setDraggedItem((prev) => (prev ? { ...prev, x: pos.x, y: pos.y } : null));
+      setDraggedItem((prev) =>
+        prev
+          ? {
+              ...prev,
+              x: pos.x,
+              y: pos.y,
+            }
+          : null,
+      );
     };
 
     const handleWindowMouseUp = (e) => {
@@ -95,6 +109,7 @@ export default function CraftBoard() {
         const draggedNode = document.getElementById("dragged-card-ghost");
 
         const canvasPos = getCanvasRelativePosition(e, draggedNode);
+
         const collisionItem = checkCollision(draggedNode);
 
         const droppedDraggedItem = {
@@ -116,27 +131,33 @@ export default function CraftBoard() {
     };
 
     window.addEventListener("mousemove", handleWindowMouseMove);
+
     window.addEventListener("mouseup", handleWindowMouseUp);
 
     return () => {
       window.removeEventListener("mousemove", handleWindowMouseMove);
+
       window.removeEventListener("mouseup", handleWindowMouseUp);
     };
   }, [draggedItem]);
 
-  // AABB Collision Detection
   const checkCollision = (draggedNode) => {
-    if (!draggedNode || !mainAreaRef.current) return null;
+    if (!draggedNode || !mainAreaRef.current) {
+      return null;
+    }
 
     const itemRect = draggedNode.getBoundingClientRect();
+
     const targetNodes = mainAreaRef.current.querySelectorAll(".board-card");
 
     for (const targetNode of targetNodes) {
       if (targetNode === draggedNode) continue;
 
       const targetId = targetNode.dataset.id;
-      // Skip colliding with items that are already combining
-      if (combiningIds.includes(targetId)) continue;
+
+      if (combiningIds.includes(targetId)) {
+        continue;
+      }
 
       const targetRect = targetNode.getBoundingClientRect();
 
@@ -150,31 +171,37 @@ export default function CraftBoard() {
         return boardItems.find((item) => item.id === targetId) || null;
       }
     }
+
     return null;
   };
 
-  // API Call to Combine Items
   const combineItems = async (item1, item2, dropPos) => {
     const pairIds = [item1.id, item2.id];
 
-    // Lock both items while waiting for API
     setCombiningIds((prev) => [...prev, ...pairIds]);
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/craft/predict`, {
+      const response = await fetch("http://127.0.0.1:8000/craft/predict", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ item1: item1.name, item2: item2.name }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          item1: item1.name,
+          item2: item2.name,
+        }),
       });
 
-      if (!response.ok) throw new Error("Combine request failed");
+      if (!response.ok) {
+        throw new Error("Combine request failed");
+      }
 
       const newItemData = await response.json();
 
       setBoardItems((prev) => [
-        ...prev.filter((i) => i.id !== item1.id && i.id !== item2.id),
+        ...prev.filter((item) => item.id !== item1.id && item.id !== item2.id),
         {
-          id: Date.now().toString(),
+          id: `${Date.now()}-${Math.random()}`,
           name: newItemData.name,
           emoji: newItemData.emoji,
           x: dropPos.x,
@@ -183,18 +210,29 @@ export default function CraftBoard() {
       ]);
 
       setSidebarItems((prev) => {
-        if (prev.some((el) => el.name === newItemData.name)) return prev;
-        return [...prev, { emoji: newItemData.emoji, name: newItemData.name }];
+        if (prev.some((element) => element.name === newItemData.name)) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          {
+            emoji: newItemData.emoji,
+            name: newItemData.name,
+          },
+        ];
       });
     } catch (err) {
       console.error("Combination Error:", err);
     } finally {
-      // Unlock item IDs if request finishes or fails
       setCombiningIds((prev) => prev.filter((id) => !pairIds.includes(id)));
     }
   };
 
-  const handleClearBoard = () => setBoardItems([]);
+  const handleClearBoard = () => {
+    setBoardItems([]);
+  };
+
   const handleResetAll = () => {
     setBoardItems([]);
     setSidebarItems(INITIAL_ELEMENTS);
@@ -202,48 +240,280 @@ export default function CraftBoard() {
 
   return (
     <div
-      className="w-full max-w-4xl mx-auto p-4 sm:p-6 select-none font-sans"
+      data-theme="craft"
+      className="
+        relative
+        w-full
+        select-none
+        font-sans
+        text-zinc-100
+      "
       onMouseDown={handleMouseDown}
     >
-      <div className="relative rounded-2xl border border-color-border bg-color-main/80 p-6 sm:p-8 flex flex-col gap-6 shadow-xl min-h-[580px] justify-between">
-        {/* HEADER BAR */}
-        <div className="flex items-center justify-between border-b border-color-border/60 pb-4">
+      {/* =========================================
+          MAIN WORKSPACE
+      ========================================== */}
+
+      <div
+        className="
+          relative
+          w-full
+          overflow-hidden
+          rounded-[22px]
+          border
+          border-zinc-800/80
+          bg-zinc-950
+          shadow-[0_20px_80px_rgba(0,0,0,0.28)]
+        "
+      >
+        {/* Ambient purple glow */}
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-1/2
+            top-1/2
+            h-[520px]
+            w-[520px]
+            -translate-x-1/2
+            -translate-y-1/2
+            rounded-full
+            bg-[var(--color-accent-glow)]
+            opacity-40
+            blur-[120px]
+          "
+        />
+
+        {/* Precision corner markers */}
+        <div className="absolute left-2 top-2 h-3 w-3 border-l-2 border-t-2 border-[var(--color-accent)]/70" />
+        <div className="absolute right-2 top-2 h-3 w-3 border-r-2 border-t-2 border-[var(--color-accent)]/70" />
+        <div className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-[var(--color-accent)]/70" />
+        <div className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-[var(--color-accent)]/70" />
+
+        {/* =========================================
+            WORKSPACE HEADER
+        ========================================== */}
+
+        <div
+          className="
+            relative
+            flex
+            items-center
+            justify-between
+            gap-4
+            border-b
+            border-zinc-800/70
+            px-5
+            py-4
+            sm:px-7
+          "
+        >
           <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-color-accent" />
-            <h1 className="text-sm font-semibold font-mono tracking-wide text-color-text uppercase">
+            <span
+              className="
+                h-2
+                w-2
+                rounded-full
+                bg-[var(--color-accent)]
+                shadow-[0_0_10px_var(--color-accent-glow)]
+              "
+            />
+
+            <span
+              className="
+                text-xs
+                font-mono
+                font-bold
+                uppercase
+                tracking-[0.14em]
+                text-zinc-200
+              "
+            >
               Infinite Craft
-            </h1>
+            </span>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs">
-            <div className="px-2.5 py-1 rounded-md bg-color-secondary/80 border border-color-border/60 text-color-text/80">
-              Discovered:{" "}
-              <span className="text-color-accent font-semibold">
-                {sidebarItems.length}
-              </span>
-            </div>
-            <div className="px-2.5 py-1 rounded-md bg-color-secondary/80 border border-color-border/60 text-color-text/80">
-              Active:{" "}
-              <span className="text-color-accent font-semibold">
-                {boardItems.length}
-              </span>
-            </div>
+          <div
+            className="
+              flex
+              items-center
+              gap-3
+              text-[10px]
+              font-mono
+              uppercase
+              tracking-wider
+            "
+          >
+            <span className="hidden sm:inline text-zinc-600">Discovered</span>
+
+            <span className="font-bold text-[var(--color-accent)]">
+              {sidebarItems.length}
+            </span>
+
+            <span className="text-zinc-800">/</span>
+
+            <span className="hidden sm:inline text-zinc-600">Active</span>
+
+            <span className="font-bold text-zinc-300">{boardItems.length}</span>
           </div>
         </div>
 
-        {/* CRAFTING CANVAS DROP AREA */}
+        {/* =========================================
+            CRAFTING CANVAS
+        ========================================== */}
+
         <div
           id="main-area"
           ref={mainAreaRef}
-          className="relative w-full h-80 sm:h-96 rounded-xl bg-color-main/60 border border-color-border/60 overflow-hidden shadow-inner flex items-center justify-center my-auto"
+          className="
+            relative
+            h-[420px]
+            sm:h-[500px]
+            lg:h-[540px]
+            overflow-hidden
+            bg-zinc-950
+          "
         >
+          {/* Subtle coordinate grid */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              opacity-[0.045]
+            "
+            style={{
+              backgroundImage: `
+                linear-gradient(
+                  to right,
+                  rgba(255,255,255,0.4) 1px,
+                  transparent 1px
+                ),
+                linear-gradient(
+                  to bottom,
+                  rgba(255,255,255,0.4) 1px,
+                  transparent 1px
+                )
+              `,
+              backgroundSize: "48px 48px",
+            }}
+          />
+
+          {/* Center crosshair */}
+          <div
+            className="
+              pointer-events-none
+              absolute
+              left-1/2
+              top-1/2
+              -translate-x-1/2
+              -translate-y-1/2
+              opacity-10
+            "
+          >
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                h-16
+                w-px
+                -translate-x-1/2
+                -translate-y-1/2
+                bg-zinc-500
+              "
+            />
+
+            <div
+              className="
+                absolute
+                left-1/2
+                top-1/2
+                h-px
+                w-16
+                -translate-x-1/2
+                -translate-y-1/2
+                bg-zinc-500
+              "
+            />
+          </div>
+
+          {/* Empty state */}
           {boardItems.length === 0 && (
-            <span className="text-xs font-mono text-color-text/30 pointer-events-none">
-              Drag elements here from the inventory below
-            </span>
+            <div
+              className="
+                pointer-events-none
+                absolute
+                inset-0
+                flex
+                flex-col
+                items-center
+                justify-center
+                text-center
+              "
+            >
+              <div
+                className="
+                  mb-4
+                  text-[9px]
+                  font-mono
+                  uppercase
+                  tracking-[0.24em]
+                  text-zinc-700
+                "
+              >
+                Workspace Empty
+              </div>
+
+              <div
+                className="
+                  text-lg
+                  sm:text-xl
+                  font-mono
+                  font-semibold
+                  text-zinc-500
+                "
+              >
+                Combine concepts
+              </div>
+
+              <div
+                className="
+                  mt-2
+                  max-w-xs
+                  text-[10px]
+                  sm:text-xs
+                  font-mono
+                  leading-relaxed
+                  text-zinc-700
+                "
+              >
+                Drag two elements into the workspace to generate something new.
+              </div>
+
+              <div
+                className="
+                  mt-6
+                  flex
+                  items-center
+                  gap-3
+                  text-xl
+                  opacity-30
+                "
+              >
+                <span>💧</span>
+                <span className="text-sm text-zinc-700">+</span>
+                <span>🔥</span>
+                <span className="text-sm text-zinc-700">→</span>
+                <span>✦</span>
+              </div>
+            </div>
           )}
 
-          {/* Cards on the Board */}
+          {/* =========================================
+              BOARD ELEMENTS
+          ========================================== */}
+
           {boardItems.map((item) => {
             const isCombining = combiningIds.includes(item.id);
 
@@ -258,66 +528,298 @@ export default function CraftBoard() {
                   left: `${item.x}px`,
                   top: `${item.y}px`,
                 }}
-                className={`board-card absolute z-10 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs font-semibold shadow-md cursor-pointer hover:border-color-accent transition-colors ${
-                  isCombining
-                    ? "pointer-events-none opacity-50 animate-pulse"
-                    : ""
-                }`}
+                className={`
+                  board-card
+                  absolute
+                  z-10
+                  flex
+                  w-[84px]
+                  cursor-grab
+                  flex-col
+                  items-center
+                  rounded-lg
+                  border
+                  px-2.5
+                  py-2.5
+                  transition-all
+                  duration-200
+                  active:cursor-grabbing
+                  ${
+                    isCombining
+                      ? `
+                        pointer-events-none
+                        scale-90
+                        border-[var(--color-accent)]/70
+                        bg-[var(--color-accent-glow)]
+                        opacity-65
+                        shadow-[0_0_28px_var(--color-accent-glow)]
+                        animate-pulse
+                      `
+                      : `
+                        border-zinc-800
+                        bg-zinc-900/90
+                        shadow-[0_10px_30px_rgba(0,0,0,0.28)]
+                        hover:-translate-y-1
+                        hover:border-[var(--color-accent)]/60
+                        hover:bg-zinc-900
+                        hover:shadow-[0_10px_30px_rgba(0,0,0,0.42)]
+                      `
+                  }
+                `}
               >
-                <span className="text-sm leading-none">{item.emoji}</span>
-                <span>{item.name}</span>
+                <span className="text-xl sm:text-2xl leading-none">
+                  {item.emoji}
+                </span>
+
+                <span
+                  className="
+                    mt-1.5
+                    max-w-full
+                    truncate
+                    text-center
+                    text-[9px]
+                    font-mono
+                    font-medium
+                    tracking-wide
+                    text-zinc-400
+                  "
+                >
+                  {item.name}
+                </span>
+
+                {isCombining && (
+                  <span
+                    className="
+                      mt-1
+                      text-[7px]
+                      font-mono
+                      uppercase
+                      tracking-[0.16em]
+                      text-[var(--color-accent)]
+                    "
+                  >
+                    Synthesizing
+                  </span>
+                )}
               </div>
             );
           })}
+
+          {/* Canvas metadata */}
+          <span
+            className="
+              pointer-events-none
+              absolute
+              left-4
+              top-4
+              text-[8px]
+              font-mono
+              uppercase
+              tracking-[0.18em]
+              text-zinc-800
+            "
+          >
+            X / 000
+          </span>
+
+          <span
+            className="
+              pointer-events-none
+              absolute
+              right-4
+              top-4
+              text-[8px]
+              font-mono
+              uppercase
+              tracking-[0.18em]
+              text-zinc-800
+            "
+          >
+            CANVAS
+          </span>
         </div>
 
-        {/* INVENTORY / SIDEBAR PALETTE */}
-        <div className="flex flex-col gap-2.5 bg-color-secondary/40 border border-color-border/60 rounded-xl p-4">
-          <div className="flex items-center justify-between border-b border-color-border/40 pb-2">
-            <span className="text-xs font-mono text-color-text/50 uppercase tracking-wider">
-              Unlocked Elements
-            </span>
-            <span className="text-[10px] font-mono text-color-text/40">
-              {sidebarItems.length} Items
+        {/* =========================================
+            INVENTORY DOCK
+        ========================================== */}
+
+        <div
+          className="
+            relative
+            border-t
+            border-zinc-800/70
+            bg-zinc-950
+            px-5
+            py-4
+            sm:px-7
+          "
+        >
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  font-semibold
+                  uppercase
+                  tracking-[0.16em]
+                  text-zinc-500
+                "
+              >
+                Unlocked Elements
+              </span>
+
+              <span className="text-[9px] font-mono text-zinc-700">
+                {sidebarItems.length}
+              </span>
+            </div>
+
+            <span
+              className="
+                hidden
+                sm:inline
+                text-[9px]
+                font-mono
+                uppercase
+                tracking-wider
+                text-zinc-700
+              "
+            >
+              Drag into workspace
             </span>
           </div>
 
           <div
             id="sidebar"
-            className="flex flex-wrap gap-2 max-h-36 overflow-y-auto pr-1"
+            className="
+              flex
+              gap-2
+              overflow-x-auto
+              pb-1
+              scrollbar-thin
+              scrollbar-track-transparent
+              scrollbar-thumb-zinc-800
+            "
           >
             {sidebarItems.map((item) => (
               <div
                 key={item.name}
                 data-name={item.name}
                 data-emoji={item.emoji}
-                className="sidebar-card inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-color-secondary border border-color-border/80 text-color-text font-mono text-xs font-medium hover:border-color-accent hover:text-color-accent transition cursor-pointer"
+                className="
+                  sidebar-card
+                  group
+                  inline-flex
+                  shrink-0
+                  cursor-grab
+                  items-center
+                  gap-2
+                  rounded-lg
+                  border
+                  border-zinc-800
+                  bg-zinc-900/60
+                  px-3
+                  py-2
+                  transition-all
+                  duration-150
+                  active:cursor-grabbing
+                  hover:border-[var(--color-accent)]/50
+                  hover:bg-zinc-900
+                "
               >
                 <span className="text-sm leading-none">{item.emoji}</span>
-                <span>{item.name}</span>
+
+                <span
+                  className="
+                    text-[10px]
+                    font-mono
+                    font-medium
+                    text-zinc-400
+                    transition-colors
+                    group-hover:text-zinc-200
+                  "
+                >
+                  {item.name}
+                </span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* BOTTOM ACTION BAR */}
-        <div className="border-t border-color-border/60 pt-4 flex items-center justify-end gap-3 min-h-[56px]">
-          <button
-            onClick={handleClearBoard}
-            className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95"
+        {/* =========================================
+            CONTROL STRIP
+        ========================================== */}
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            border-t
+            border-zinc-900
+            px-5
+            py-3
+            sm:px-7
+          "
+        >
+          <span
+            className="
+              text-[8px]
+              font-mono
+              uppercase
+              tracking-[0.18em]
+              text-zinc-800
+            "
           >
-            Clear Canvas
-          </button>
-          <button
-            onClick={handleResetAll}
-            className="px-4 py-2 rounded-lg bg-color-secondary border border-color-border text-color-text font-mono text-xs tracking-wider uppercase transition-colors hover:border-color-accent hover:text-color-accent active:scale-95"
-          >
-            Reset All
-          </button>
+            LLM Combination Workspace
+          </span>
+
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleClearBoard}
+              className="
+                rounded-md
+                px-3
+                py-1.5
+                text-[9px]
+                font-mono
+                uppercase
+                tracking-wider
+                text-zinc-600
+                transition
+                hover:bg-zinc-900
+                hover:text-zinc-300
+              "
+            >
+              Clear
+            </button>
+
+            <button
+              onClick={handleResetAll}
+              className="
+                rounded-md
+                px-3
+                py-1.5
+                text-[9px]
+                font-mono
+                uppercase
+                tracking-wider
+                text-zinc-600
+                transition
+                hover:bg-zinc-900
+                hover:text-[var(--color-accent)]
+              "
+            >
+              Reset
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* DRAGGED GHOST CARD (FOLLOWS CURSOR) */}
+      {/* =========================================
+          DRAG GHOST
+      ========================================== */}
+
       {draggedItem && (
         <div
           id="dragged-card-ghost"
@@ -329,10 +831,30 @@ export default function CraftBoard() {
             top: `${draggedItem.y}px`,
             pointerEvents: "none",
           }}
-          className="dragged-card fixed z-50 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-color-secondary border-2 border-color-accent text-color-accent font-mono text-xs font-semibold shadow-2xl scale-105"
+          className="
+            dragged-card
+            fixed
+            z-50
+            flex
+            min-w-[84px]
+            flex-col
+            items-center
+            rounded-lg
+            border
+            border-[var(--color-accent)]/70
+            bg-zinc-900
+            px-3
+            py-2.5
+            text-[var(--color-accent)]
+            shadow-[0_18px_50px_var(--color-accent-glow)]
+            scale-105
+          "
         >
-          <span className="text-base leading-none">{draggedItem.emoji}</span>
-          <span>{draggedItem.name}</span>
+          <span className="text-xl leading-none">{draggedItem.emoji}</span>
+
+          <span className="mt-1.5 text-[9px] font-mono font-semibold">
+            {draggedItem.name}
+          </span>
         </div>
       )}
     </div>

@@ -1,15 +1,13 @@
 import React, { useRef, useState, useEffect, useCallback } from "react";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const API_BASE_URL = "http://127.0.0.1:8000";
 
 export default function DrawingCanvas({ onPrediction, onClear }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
-  const [isPredicting, setIsPredicting] = useState(false);
-  const [hasDrawn, setHasDrawn] = useState(true);
 
-  const initCanvas = useCallback((drawSample = false) => {
+  const initCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
@@ -20,18 +18,10 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.strokeStyle = "#ffffff";
-
-    if (drawSample) {
-      ctx.beginPath();
-      ctx.moveTo(7, 7);
-      ctx.lineTo(21, 21);
-      ctx.stroke();
-    }
   }, []);
 
   useEffect(() => {
-    initCanvas(true);
-    setHasDrawn(true);
+    initCanvas();
   }, [initCanvas]);
 
   const getCoordinates = (e) => {
@@ -39,8 +29,8 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
 
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const clientX = e.clientX;
+    const clientY = e.clientY;
 
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
@@ -70,7 +60,6 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
     ctx.moveTo(x, y);
 
     setIsDrawing(true);
-    setHasDrawn(true);
   };
 
   const draw = (e) => {
@@ -101,7 +90,6 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
 
   const clearCanvas = () => {
     initCanvas(false);
-    setHasDrawn(false);
     if (onClear) onClear();
   };
 
@@ -114,8 +102,6 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
     for (let i = 0; i < imgData.length; i += 4) {
       pixels.push(imgData[i]);
     }
-
-    setIsPredicting(true);
 
     try {
       const response = await fetch(`${API_BASE_URL}/cnn/predict`, {
@@ -130,26 +116,11 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
       if (data && onPrediction) onPrediction(data);
     } catch (err) {
       console.error("Prediction Error:", err);
-    } finally {
-      setIsPredicting(false);
     }
   };
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      {/* Canvas Header Bar */}
-      <div className="flex items-center justify-between w-72 sm:w-80 text-[11px] font-mono text-zinc-500 px-1">
-        <span>DRAW AREA (28x28)</span>
-        <div className="flex items-center gap-2">
-          <span
-            className={`w-2 h-2 rounded-full transition-colors ${
-              hasDrawn ? "bg-[var(--color-accent)]" : "bg-zinc-600"
-            }`}
-          />
-          <span className="text-zinc-300">{hasDrawn ? "Active" : "Ready"}</span>
-        </div>
-      </div>
-
       {/* Viewport with Light Border */}
       <div className="relative w-72 h-72 sm:w-80 sm:h-80 rounded-2xl overflow-hidden bg-black border border-zinc-800/60">
         <canvas
