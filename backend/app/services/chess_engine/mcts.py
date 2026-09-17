@@ -508,29 +508,3 @@ class MCTS:
         print(f"visit count: {N_values_children}")
         print(f"total nodes visited: {self.current_node.N}")
         print(f"evaluation: {self.current_node.W / (self.current_node.N + 1)}")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

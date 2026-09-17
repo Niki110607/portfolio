@@ -14,7 +14,6 @@ export default function ChessPage() {
     setEvalScore(0.0);
   };
 
-  // Convert raw evaluation into a visual gauge position.
   const evalPercentage = Math.min(
     Math.max(((evalScore + 5) / 10) * 100, 5),
     95,
@@ -39,10 +38,7 @@ export default function ChessPage() {
         overflow-x-hidden
       "
     >
-      {/* =========================================
-          AMBIENT BACKGROUND
-      ========================================== */}
-
+      {/* Ambient engine glow */}
       <div
         className="
           fixed
@@ -50,12 +46,12 @@ export default function ChessPage() {
           left-1/2
           -translate-x-1/2
           -translate-y-1/2
-          w-[850px]
-          h-[850px]
+          w-[800px]
+          h-[800px]
           rounded-full
           bg-[var(--color-accent-glow)]
           blur-[220px]
-          opacity-20
+          opacity-15
           pointer-events-none
         "
       />
@@ -66,6 +62,8 @@ export default function ChessPage() {
 
       <header
         className="
+          relative
+          z-10
           w-full
           max-w-5xl
           mx-auto
@@ -74,29 +72,26 @@ export default function ChessPage() {
           flex
           items-center
           justify-between
-          relative
-          z-10
         "
       >
         <Link
           to="/"
           className="
-            group
-            flex
-            items-center
-            gap-2
             text-xs
             font-mono
             text-zinc-500
-            transition-colors
             hover:text-white
+            transition-colors
+            flex
+            items-center
+            gap-2
+            group
           "
         >
-          <span className="transition-transform group-hover:-translate-x-1">
+          <span className="group-hover:-translate-x-1 transition-transform">
             ←
           </span>
-
-          <span>Portfolio</span>
+          Portfolio
         </Link>
 
         <span
@@ -104,13 +99,31 @@ export default function ChessPage() {
             text-[10px]
             sm:text-xs
             font-mono
+            text-zinc-400
             uppercase
             tracking-[0.16em]
-            text-zinc-400
           "
         >
           MCTS + Transformer Engine
         </span>
+        <a
+          href="https://github.com/Niki110607/chess_ai"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 hover:text-white transition-colors"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M12 .7a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.4-1.34-1.78-1.34-1.78-1.09-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0 1 12 7.03c1.02 0 2.05.14 3.01.42 2.29-1.55 3.29-1.23 3.29-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .7Z" />
+          </svg>
+
+          <span>GitHub</span>
+          <span className="text-[10px]">↗</span>
+        </a>
       </header>
 
       {/* =========================================
@@ -119,9 +132,9 @@ export default function ChessPage() {
 
       <main
         className="
+          flex-1
           relative
           z-10
-          flex-1
           w-full
           max-w-5xl
           mx-auto
@@ -130,16 +143,16 @@ export default function ChessPage() {
         "
       >
         {/* =========================================
-            PROJECT INTRO
+            PROJECT TITLE
         ========================================== */}
 
         <div
           className="
             text-center
             pt-10
-            sm:pt-14
-            pb-11
-            sm:pb-13
+            sm:pt-12
+            pb-9
+            sm:pb-10
           "
         >
           <h1
@@ -160,8 +173,8 @@ export default function ChessPage() {
               mt-3
               text-xs
               sm:text-sm
-              font-mono
               text-zinc-400
+              font-mono
             "
           >
             6.5M parameter neural network powered by Monte Carlo Tree Search
@@ -169,7 +182,7 @@ export default function ChessPage() {
         </div>
 
         {/* =========================================
-            WORKSPACE LABEL
+            WORKSPACE HEADER
         ========================================== */}
 
         <div
@@ -177,8 +190,10 @@ export default function ChessPage() {
             flex
             items-center
             justify-between
-            mb-3
             px-1
+            pb-3
+            border-b
+            border-zinc-800/80
           "
         >
           <span
@@ -186,9 +201,9 @@ export default function ChessPage() {
               text-[10px]
               sm:text-[11px]
               font-mono
+              text-zinc-500
               uppercase
               tracking-[0.14em]
-              text-zinc-500
             "
           >
             Board Workspace
@@ -206,146 +221,169 @@ export default function ChessPage() {
               "
             />
 
-            <span className="text-[10px] sm:text-[11px] font-mono text-zinc-300">
+            <span
+              className="
+                text-[10px]
+                sm:text-[11px]
+                font-mono
+                text-zinc-300
+              "
+            >
               Engine Ready
             </span>
           </div>
         </div>
 
         {/* =========================================
-            HERO WORKSPACE
+            BOARD WORKSPACE
         ========================================== */}
 
-        <section className="w-full">
-          <div
-            className="
-              w-full
-              max-w-2xl
-              mx-auto
-              flex
-              items-stretch
-              justify-center
-              gap-4
-              sm:gap-5
-            "
-          >
-            {/* =====================================
-                BOARD
+        <section className="w-full pt-5">
+          <div className="w-full max-w-xl mx-auto">
+            <div
+              className="
+                flex
+                items-stretch
+                justify-center
+                gap-3
+                sm:gap-4
+                w-full
+              "
+            >
+              {/* Chessboard */}
+              <div className="min-w-0 flex-1">
+                <ChessBoard key={boardKey} onEvalUpdate={setEvalScore} />
+              </div>
 
-                ChessBoard already owns its border,
-                radius, shadow and corner markers.
-                No extra wrapper here.
-            ====================================== */}
+              {/* =====================================
+                  ENGINE EVALUATION RAIL
+              ====================================== */}
 
-            <div className="flex-1 min-w-0">
-              <ChessBoard key={boardKey} onEvalUpdate={setEvalScore} />
-            </div>
-
-            {/* =====================================
-                EVALUATION TELEMETRY
-            ====================================== */}
-
-            {showEval && (
-              <aside
-                className="
-                  flex
-                  w-11
-                  sm:w-12
-                  shrink-0
-                  flex-col
-                  items-center
-                  justify-between
-                  rounded-2xl
-                  border
-                  border-zinc-800/80
-                  bg-zinc-950/80
-                  py-3
-                  shadow-inner
-                "
-              >
-                {/* Score */}
-                <span
-                  className="
-                    text-[10px]
-                    font-mono
-                    font-bold
-                    text-zinc-300
-                  "
-                >
-                  {formattedEval}
-                </span>
-
-                {/* Gauge */}
+              {showEval && (
                 <div
                   className="
-                    relative
-                    my-2
-                    flex-1
-                    w-2
-                    overflow-hidden
-                    rounded-full
+                    w-10
+                    sm:w-11
+                    shrink-0
+                    flex
+                    flex-col
+                    items-center
+                    justify-between
+                    py-3
+                    rounded-xl
                     border
-                    border-white/[0.04]
-                    bg-zinc-900
+                    border-zinc-800/80
+                    bg-zinc-950/80
+                    shadow-inner
                   "
                 >
-                  {/* Zero line */}
-                  <div
+                  {/* Score */}
+                  <span
                     className="
-                      absolute
-                      top-1/2
-                      left-0
-                      z-10
-                      h-px
-                      w-full
-                      bg-zinc-500/50
+                      text-[10px]
+                      font-mono
+                      font-bold
+                      text-zinc-300
+                      leading-none
                     "
-                  />
+                  >
+                    {formattedEval}
+                  </span>
 
-                  {/* Evaluation fill */}
+                  {/* Gauge */}
                   <div
                     className="
-                      absolute
-                      bottom-0
-                      left-0
-                      w-full
-                      rounded-b-full
-                      bg-[var(--color-accent)]
-                      transition-all
-                      duration-500
-                      shadow-[0_0_10px_var(--color-accent-glow)]
+                      relative
+                      my-3
+                      w-[6px]
+                      flex-1
+                      min-h-[170px]
+                      rounded-full
+                      bg-zinc-900
+                      overflow-hidden
                     "
-                    style={{
-                      height: `${evalPercentage}%`,
-                    }}
-                  />
+                  >
+                    <div
+                      className="
+                        absolute
+                        left-1/2
+                        top-1/2
+                        -translate-x-1/2
+                        -translate-y-1/2
+                        w-3
+                        h-px
+                        bg-zinc-600
+                        z-10
+                      "
+                    />
+
+                    <div
+                      className="
+                        absolute
+                        bottom-0
+                        left-0
+                        w-full
+                        rounded-full
+                        bg-[var(--color-accent)]
+                        transition-all
+                        duration-500
+                        shadow-[0_0_10px_var(--color-accent)]
+                      "
+                      style={{
+                        height: `${evalPercentage}%`,
+                      }}
+                    />
+                  </div>
+
+                  <span
+                    className="
+                      text-[8px]
+                      font-mono
+                      text-zinc-600
+                      uppercase
+                      tracking-[0.1em]
+                    "
+                  >
+                    EVAL
+                  </span>
                 </div>
+              )}
+            </div>
 
-                <span
-                  className="
-                    text-[8px]
-                    font-mono
-                    uppercase
-                    tracking-[0.16em]
-                    text-zinc-600
-                  "
-                >
-                  Eval
-                </span>
-              </aside>
-            )}
+            {/* =========================================
+                VISIBLE CONTROLS
+            ========================================== */}
+
+            {/* Action Control Pills */}
+            <div className="flex items-center gap-5 w-full max-w-xl mt-5">
+              <button
+                onClick={handleReset}
+                className="flex-1 py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-mono font-medium text-zinc-300 hover:text-white transition active:scale-95"
+              >
+                Reset Board
+              </button>
+
+              <button
+                onClick={() => setShowEval((prev) => !prev)}
+                className={`flex-1 py-2.5 px-4 rounded-xl border text-xs font-mono font-medium transition active:scale-95 ${
+                  showEval
+                    ? "bg-[var(--color-accent-glow)] border-[var(--color-accent)]/40 text-[var(--color-accent)]"
+                    : "bg-zinc-900 hover:bg-zinc-800 border-zinc-800 text-zinc-300 hover:text-white"
+                }`}
+              >
+                {showEval ? "Hide Evaluation" : "Show Evaluation"}
+              </button>
+            </div>
           </div>
         </section>
 
         {/* =========================================
-            FLAT TELEMETRY
+            MODEL TELEMETRY
         ========================================== */}
 
         <section
           className="
             w-full
-            max-w-2xl
-            mx-auto
             mt-8
             py-5
             border-y
@@ -361,7 +399,6 @@ export default function ChessPage() {
               sm:gap-y-0
             "
           >
-            {/* Model */}
             <div
               className="
                 text-center
@@ -369,32 +406,15 @@ export default function ChessPage() {
                 border-zinc-800/70
               "
             >
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
+              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
                 Model Size
               </div>
 
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-white
-                "
-              >
+              <div className="mt-1 text-sm font-mono font-bold text-white">
                 6.5M Params
               </div>
             </div>
 
-            {/* Dataset */}
             <div
               className="
                 text-center
@@ -402,32 +422,15 @@ export default function ChessPage() {
                 border-zinc-800/70
               "
             >
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
+              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
                 Dataset
               </div>
 
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-white
-                "
-              >
+              <div className="mt-1 text-sm font-mono font-bold text-white">
                 10M Positions
               </div>
             </div>
 
-            {/* Speed */}
             <div
               className="
                 text-center
@@ -435,135 +438,26 @@ export default function ChessPage() {
                 border-zinc-800/70
               "
             >
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
+              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
                 Speed
               </div>
 
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-white
-                "
-              >
+              <div className="mt-1 text-sm font-mono font-bold text-white">
                 1,000 pos/sec
               </div>
             </div>
 
-            {/* Strength */}
             <div className="text-center">
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
+              <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
                 Strength
               </div>
 
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-[var(--color-accent)]
-                "
-              >
+              <div className="mt-1 text-sm font-mono font-bold text-[var(--color-accent)]">
                 2200–2400 ELO
               </div>
             </div>
           </div>
         </section>
-
-        {/* =========================================
-            CONTROLS
-        ========================================== */}
-
-        <div
-          className="
-            flex
-            items-center
-            justify-center
-            gap-2
-            sm:gap-3
-            w-full
-            max-w-2xl
-            mx-auto
-            mt-6
-          "
-        >
-          <button
-            onClick={handleReset}
-            className="
-              flex-1
-              max-w-xs
-              py-2.5
-              px-4
-              rounded-lg
-              bg-zinc-900/80
-              border
-              border-zinc-800
-              text-xs
-              font-mono
-              font-medium
-              text-zinc-400
-              hover:border-zinc-700
-              hover:text-white
-              transition-all
-              active:scale-95
-            "
-          >
-            Reset Position
-          </button>
-
-          <button
-            onClick={() => setShowEval((prev) => !prev)}
-            className={`
-              flex-1
-              max-w-xs
-              py-2.5
-              px-4
-              rounded-lg
-              border
-              text-xs
-              font-mono
-              font-medium
-              transition-all
-              active:scale-95
-              ${
-                showEval
-                  ? `
-                    bg-[var(--color-accent-glow)]
-                    border-[var(--color-accent)]/40
-                    text-[var(--color-accent)]
-                  `
-                  : `
-                    bg-zinc-900/80
-                    border-zinc-800
-                    text-zinc-400
-                    hover:border-zinc-700
-                    hover:text-white
-                  `
-              }
-            `}
-          >
-            Evaluation: {showEval ? "On" : "Off"}
-          </button>
-        </div>
 
         {/* =========================================
             TECHNICAL DETAILS
@@ -573,21 +467,21 @@ export default function ChessPage() {
           <button
             onClick={() => setShowTechDetails((prev) => !prev)}
             className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-zinc-800
-              bg-zinc-900/30
-              px-4
-              py-2
               text-xs
               font-mono
               text-zinc-500
-              transition-colors
-              hover:border-zinc-700
               hover:text-zinc-200
+              transition-colors
+              flex
+              items-center
+              gap-2
+              py-2
+              px-4
+              rounded-full
+              border
+              border-zinc-800/80
+              hover:border-zinc-700
+              bg-zinc-900/40
             "
           >
             <span>
@@ -615,7 +509,7 @@ export default function ChessPage() {
         <footer
           className="
             w-full
-            bg-zinc-950/95
+            bg-zinc-950/90
             border-t
             border-zinc-800/80
             backdrop-blur-xl
@@ -625,26 +519,25 @@ export default function ChessPage() {
           "
         >
           <div className="max-w-5xl mx-auto px-6">
-            {/* Tabs */}
             <div
               className="
                 flex
-                gap-6
                 overflow-x-auto
+                gap-6
                 border-b
                 border-zinc-800/80
-                mb-7
                 text-xs
                 font-mono
+                mb-7
               "
             >
               <button
                 onClick={() => setActiveTab("overview")}
                 className={`
                   whitespace-nowrap
-                  border-b-2
                   pb-3
-                  transition-colors
+                  border-b-2
+                  transition
                   ${
                     activeTab === "overview"
                       ? "border-[var(--color-accent)] text-[var(--color-accent)] font-bold"
@@ -659,9 +552,9 @@ export default function ChessPage() {
                 onClick={() => setActiveTab("mcts")}
                 className={`
                   whitespace-nowrap
-                  border-b-2
                   pb-3
-                  transition-colors
+                  border-b-2
+                  transition
                   ${
                     activeTab === "mcts"
                       ? "border-[var(--color-accent)] text-[var(--color-accent)] font-bold"
@@ -672,10 +565,6 @@ export default function ChessPage() {
                 MCTS Integration
               </button>
             </div>
-
-            {/* =====================================
-                TRANSFORMER ARCHITECTURE
-            ====================================== */}
 
             {activeTab === "overview" && (
               <div
@@ -689,56 +578,32 @@ export default function ChessPage() {
                 "
               >
                 <div>
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-mono
-                      font-semibold
-                      text-white
-                    "
-                  >
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
                     Move Policy Head
                   </div>
 
                   <p className="mt-2 leading-relaxed">
-                    Outputs a probability distribution across legal candidate
-                    move vectors to guide search priorities toward tactical
-                    lines.
+                    Outputs a probability distribution across all legal
+                    candidate move vectors to guide search priorities toward
+                    optimal tactical lines.
                   </p>
                 </div>
 
                 <div>
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-mono
-                      font-semibold
-                      text-white
-                    "
-                  >
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-cyan-400" />
                     Value Evaluation Head
                   </div>
 
                   <p className="mt-2 leading-relaxed">
-                    Evaluates the 8x8 spatial board representation to produce
-                    positional win probabilities and numerical evaluation
-                    metrics.
+                    Evaluates raw 8x8 spatial board state tensors to predict
+                    positional win probabilities and precise numerical
+                    evaluation metrics.
                   </p>
                 </div>
               </div>
             )}
-
-            {/* =====================================
-                MCTS
-            ====================================== */}
 
             {activeTab === "mcts" && (
               <div
@@ -752,17 +617,7 @@ export default function ChessPage() {
                 "
               >
                 <div>
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-mono
-                      font-semibold
-                      text-white
-                    "
-                  >
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
                     Branch Pruning
                   </div>
@@ -775,18 +630,8 @@ export default function ChessPage() {
                 </div>
 
                 <div>
-                  <div
-                    className="
-                      flex
-                      items-center
-                      gap-2
-                      text-sm
-                      font-mono
-                      font-semibold
-                      text-white
-                    "
-                  >
-                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     High Throughput
                   </div>
 

@@ -196,83 +196,8 @@ export default function ChessBoard({
       style={{
         containerType: "inline-size",
       }}
+      data-theme="chess"
     >
-      {/* =========================================
-          SUBTLE AMBER CORNER MARKERS
-      ========================================== */}
-
-      <div
-        className="
-          absolute
-          top-1
-          left-1
-          w-2.5
-          h-2.5
-          border-t-2
-          border-l-2
-          border-amber-500/55
-          rounded-tl-sm
-          opacity-70
-          group-hover:opacity-100
-          transition-opacity
-          z-20
-        "
-      />
-
-      <div
-        className="
-          absolute
-          top-1
-          right-1
-          w-2.5
-          h-2.5
-          border-t-2
-          border-r-2
-          border-amber-500/55
-          rounded-tr-sm
-          opacity-70
-          group-hover:opacity-100
-          transition-opacity
-          z-20
-        "
-      />
-
-      <div
-        className="
-          absolute
-          bottom-1
-          left-1
-          w-2.5
-          h-2.5
-          border-b-2
-          border-l-2
-          border-amber-500/55
-          rounded-bl-sm
-          opacity-70
-          group-hover:opacity-100
-          transition-opacity
-          z-20
-        "
-      />
-
-      <div
-        className="
-          absolute
-          bottom-1
-          right-1
-          w-2.5
-          h-2.5
-          border-b-2
-          border-r-2
-          border-amber-500/55
-          rounded-br-sm
-          opacity-70
-          group-hover:opacity-100
-          transition-opacity
-          z-20
-        "
-      />
-
       {/* =========================================
           CHESSBOARD
       ========================================== */}

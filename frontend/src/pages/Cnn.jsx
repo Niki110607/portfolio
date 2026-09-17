@@ -110,6 +110,24 @@ export default function CnnPage() {
         >
           CNN Vision Engine
         </span>
+        <a
+          href="https://github.com/Niki110607/CNN-from-scratch-numpy-"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 hover:text-white transition-colors"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-3.5 h-3.5"
+            aria-hidden="true"
+          >
+            <path d="M12 .7a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.4-1.34-1.78-1.34-1.78-1.09-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0 1 12 7.03c1.02 0 2.05.14 3.01.42 2.29-1.55 3.29-1.23 3.29-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .7Z" />
+          </svg>
+
+          <span>GitHub</span>
+          <span className="text-[10px]">↗</span>
+        </a>
       </header>
 
       {/* =========================================
@@ -200,7 +218,6 @@ export default function CnnPage() {
                 h-2
                 rounded-full
                 bg-[var(--color-accent)]
-                animate-pulse
                 shadow-[0_0_10px_var(--color-accent-glow)]
               "
             />
@@ -298,15 +315,14 @@ export default function CnnPage() {
               </div>
 
               <div
-                className={`
+                className="
                   min-h-[150px]
                   flex
                   flex-col
                   justify-center
                   transition-all
                   duration-300
-                  ${prediction !== null ? "opacity-100" : "opacity-100"}
-                `}
+                "
               >
                 {prediction !== null ? (
                   <>
@@ -350,7 +366,7 @@ export default function CnnPage() {
                 ) : (
                   <>
                     <div
-                      className="
+                      className={`
                         text-[7rem]
                         sm:text-[8rem]
                         font-mono
@@ -358,9 +374,10 @@ export default function CnnPage() {
                         leading-[0.8]
                         tracking-[-0.08em]
                         text-zinc-900
-                      "
+                        ${prediction !== null ? "opacity-100" : "opacity-0"}
+                      `}
                     >
-                      —
+                      placeholder
                     </div>
 
                     <span

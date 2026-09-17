@@ -167,7 +167,7 @@ export default function PlayingBoard({ onHint }) {
           w-full
           min-h-[500px]
           sm:min-h-[540px]
-          rounded-[22px]
+          rounded-2xl
           border
           border-zinc-800/80
           bg-zinc-950/40
@@ -183,12 +183,6 @@ export default function PlayingBoard({ onHint }) {
             bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.055),transparent_58%)]
           "
         />
-
-        {/* Corner markers */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-emerald-400/80 rounded-tl-sm" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-emerald-400/80 rounded-tr-sm" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-emerald-400/80 rounded-bl-sm" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-emerald-400/80 rounded-br-sm" />
 
         <div className="relative h-full min-h-[500px] sm:min-h-[540px] flex flex-col px-5 sm:px-8 py-5 sm:py-6">
           {/* Table header */}

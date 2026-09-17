@@ -259,7 +259,7 @@ export default function CraftBoard() {
           relative
           w-full
           overflow-hidden
-          rounded-[22px]
+          rounded-2xl
           border
           border-zinc-800/80
           bg-zinc-950
@@ -283,12 +283,6 @@ export default function CraftBoard() {
             blur-[120px]
           "
         />
-
-        {/* Precision corner markers */}
-        <div className="absolute left-2 top-2 h-3 w-3 border-l-2 border-t-2 border-[var(--color-accent)]/70" />
-        <div className="absolute right-2 top-2 h-3 w-3 border-r-2 border-t-2 border-[var(--color-accent)]/70" />
-        <div className="absolute bottom-2 left-2 h-3 w-3 border-b-2 border-l-2 border-[var(--color-accent)]/70" />
-        <div className="absolute bottom-2 right-2 h-3 w-3 border-b-2 border-r-2 border-[var(--color-accent)]/70" />
 
         {/* =========================================
             WORKSPACE HEADER
@@ -398,45 +392,6 @@ export default function CraftBoard() {
               backgroundSize: "48px 48px",
             }}
           />
-
-          {/* Center crosshair */}
-          <div
-            className="
-              pointer-events-none
-              absolute
-              left-1/2
-              top-1/2
-              -translate-x-1/2
-              -translate-y-1/2
-              opacity-10
-            "
-          >
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                h-16
-                w-px
-                -translate-x-1/2
-                -translate-y-1/2
-                bg-zinc-500
-              "
-            />
-
-            <div
-              className="
-                absolute
-                left-1/2
-                top-1/2
-                h-px
-                w-16
-                -translate-x-1/2
-                -translate-y-1/2
-                bg-zinc-500
-              "
-            />
-          </div>
 
           {/* Empty state */}
           {boardItems.length === 0 && (
