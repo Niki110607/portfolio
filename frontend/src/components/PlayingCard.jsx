@@ -74,7 +74,7 @@ export default function PlayingCard({ suit, value, hidden = false }) {
 
   return (
     <div
-      className={`
+      className="
         relative
         w-20
         h-28
@@ -92,7 +92,7 @@ export default function PlayingCard({ suit, value, hidden = false }) {
         shadow-[0_12px_28px_rgba(0,0,0,0.35)]
         shrink-0
         overflow-hidden
-      `}
+      "
     >
       {/* Subtle top edge */}
       <div className="absolute inset-x-0 top-0 h-px bg-white/80" />

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+
 import PlayingBoard from "../components/PlayingBoard";
 import { useApp } from "../context/AppContext";
 
@@ -26,49 +27,103 @@ export default function BlackjackPage() {
 
     const qValues = hintData.q_values;
     const validActions = hintData.validActions || {};
+
     const validFlags = [
       true,
       true,
       Boolean(validActions.double ?? true),
       Boolean(validActions.split ?? true),
     ];
+
     const maskedQValues = qValues.map((q, index) =>
       validFlags[index] ? q : -Infinity,
     );
+
     const maxQ = Math.max(...maskedQValues);
+
     const bestActionIdx = maxQ === -Infinity ? -1 : maskedQValues.indexOf(maxQ);
+
     const validQValues = qValues.filter((_, index) => validFlags[index]);
+
     const maxValidQ = Math.max(...validQValues);
+
     const expValues = qValues.map((q, index) =>
       validFlags[index] ? Math.exp(q - maxValidQ) : 0,
     );
+
     const sumExp = expValues.reduce((sum, value) => sum + value, 0);
+
     const probabilities = expValues.map((value, index) =>
       validFlags[index] && sumExp > 0 ? value / sumExp : 0,
     );
 
-    return { bestActionIdx, probabilities, validFlags };
+    return {
+      bestActionIdx,
+      probabilities,
+      validFlags,
+    };
   }, [hintData]);
 
   return (
     <div
       data-theme="casino"
-      className="min-h-screen bg-[var(--bg-main,#09090b)] text-[var(--color-text,#f4f4f5)] flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-400 relative overflow-x-hidden"
+      className="
+        relative flex min-h-screen w-full flex-col
+        overflow-x-hidden
+        bg-[var(--bg-main,#09090b)]
+        font-sans
+        text-[var(--color-text,#f4f4f5)]
+        selection:bg-emerald-500/20
+        selection:text-emerald-400
+      "
     >
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full bg-emerald-500/[0.035] blur-[220px] pointer-events-none" />
+      <div
+        className="
+          pointer-events-none
+          fixed left-1/2 top-1/2
+          h-[900px] w-[900px]
+          -translate-x-1/2 -translate-y-1/2
+          rounded-full
+          bg-emerald-500/[0.035]
+          blur-[220px]
+        "
+      />
 
-      <header className="w-full max-w-6xl mx-auto px-6 sm:px-8 py-6 flex items-center justify-between relative z-10">
+      <header
+        className="
+          relative z-10
+          mx-auto flex w-full max-w-6xl
+          items-center justify-between
+          px-6 py-6
+          sm:px-8
+        "
+      >
         <Link
           to="/"
-          className="text-xs font-mono text-zinc-500 hover:text-white transition-colors flex items-center gap-2 group"
+          className="
+            group
+            flex items-center gap-2
+            text-xs font-mono
+            text-zinc-500
+            transition-colors
+            hover:text-white
+          "
         >
-          <span className="group-hover:-translate-x-1 transition-transform">
+          <span className="transition-transform group-hover:-translate-x-1">
             ←
           </span>
+
           <span>{langIsGerman ? "Portfolio" : "Portfolio"}</span>
         </Link>
 
-        <span className="text-[10px] sm:text-xs font-mono text-zinc-400 uppercase tracking-[0.18em]">
+        <span
+          className="
+            text-[10px] font-mono uppercase
+            tracking-[0.18em]
+            text-zinc-400
+            sm:text-xs
+          "
+        >
           DQN + Blackjack Agent
         </span>
 
@@ -76,64 +131,142 @@ export default function BlackjackPage() {
           href="https://github.com/Niki110607/blackjack_rl"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-zinc-500 hover:text-white transition-colors"
+          className="
+            inline-flex items-center gap-1.5
+            text-xs font-mono
+            text-zinc-500
+            transition-colors
+            hover:text-white
+          "
         >
           <svg
             viewBox="0 0 24 24"
             fill="currentColor"
-            className="w-3.5 h-3.5"
+            className="h-3.5 w-3.5"
             aria-hidden="true"
           >
             <path d="M12 .7a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.42-4.04-1.42-.55-1.4-1.34-1.78-1.34-1.78-1.09-.74.08-.73.08-.73 1.2.08 1.83 1.23 1.83 1.23 1.07 1.83 2.8 1.3 3.49.99.11-.77.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.23-3.22-.12-.3-.53-1.52.12-3.17 0 0 1-.32 3.3 1.23A11.5 11.5 0 0 1 12 7.03c1.02 0 2.05.14 3.01.42 2.29-1.55 3.29-1.23 3.29-1.23.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.49 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.69.83.57A12 12 0 0 0 12 .7Z" />
           </svg>
+
           <span>GitHub</span>
           <span className="text-[10px]">↗</span>
         </a>
       </header>
 
-      <main className="flex-1 w-full max-w-6xl mx-auto px-6 sm:px-8 pb-16 relative z-10">
-        <div className="text-center pt-10 sm:pt-14 pb-10 sm:pb-12">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white">
+      <main
+        className="
+          relative z-10
+          mx-auto flex w-full max-w-6xl flex-1
+          px-6 pb-16
+          sm:px-8
+        "
+      >
+        <div
+          className="
+            pt-10 pb-10
+            text-center
+            sm:pt-14 sm:pb-12
+          "
+        >
+          <h1
+            className="
+              text-3xl font-extrabold
+              tracking-[-0.04em]
+              text-white
+              sm:text-4xl
+              md:text-5xl
+            "
+          >
             Blackjack RL Agent
           </h1>
-          <p className="mt-3 text-xs sm:text-sm text-zinc-400 font-mono">
+
+          <p className="mt-3 text-xs font-mono text-zinc-400 sm:text-sm">
             {langIsGerman
               ? "Deep-Q-Learning-Agent, trainiert auf 3 Millionen Blackjack-Händen"
               : "Deep Q-Learning agent trained on 3 million Blackjack hands"}
           </p>
         </div>
 
-        <div className="flex items-center justify-between mb-3 px-1">
-          <span className="text-[10px] sm:text-[11px] font-mono text-zinc-500 uppercase tracking-[0.14em]">
+        <div className="mb-3 flex items-center justify-between px-1">
+          <span
+            className="
+              text-[10px] font-mono uppercase
+              tracking-[0.14em]
+              text-zinc-500
+              sm:text-[11px]
+            "
+          >
             {langIsGerman ? "Blackjack-Tisch" : "Blackjack Table"}
           </span>
-          <div className="flex items-center gap-2 text-[10px] sm:text-[11px] font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+
+          <div
+            className="
+              flex items-center gap-2
+              text-[10px] font-mono
+              sm:text-[11px]
+            "
+          >
+            <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+
             <span className="text-zinc-300">
               {langIsGerman ? "Agent bereit" : "Agent Ready"}
             </span>
           </div>
         </div>
 
-        <section className="w-full border-t border-b border-zinc-800/80 py-4 sm:py-5">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_220px]">
+        <section
+          className="
+            w-full
+            border-y border-zinc-800/80
+            py-4
+            sm:py-5
+          "
+        >
+          <div
+            className="
+              grid grid-cols-1
+              lg:grid-cols-[minmax(0,1fr)_220px]
+            "
+          >
             <div className="min-w-0 pr-0 lg:pr-7">
               <PlayingBoard onHint={handleData} />
             </div>
 
             <aside
-              className={`${showPolicy ? "block" : "hidden"} mt-5 lg:mt-0 lg:border-l border-zinc-800/80 pt-6 lg:pt-2 lg:pl-6`}
+              className={`
+                ${showPolicy ? "block" : "hidden"}
+                mt-5
+                border-zinc-800/80
+                pt-6
+                lg:mt-0
+                lg:border-l
+                lg:pl-6
+                lg:pt-2
+              `}
             >
-              <div className="flex items-center justify-between mb-5">
-                <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.14em]">
+              <div className="mb-5 flex items-center justify-between">
+                <span
+                  className="
+                    text-[10px] font-mono uppercase
+                    tracking-[0.14em]
+                    text-zinc-500
+                  "
+                >
                   {langIsGerman ? "AI-Policy" : "AI Policy"}
                 </span>
+
                 {analysis && analysis.bestActionIdx !== -1 ? (
-                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase">
+                  <span
+                    className="
+                      text-[10px] font-mono font-bold
+                      uppercase
+                      text-emerald-400
+                    "
+                  >
                     {langIsGerman ? "Aktiv" : "Live"}
                   </span>
                 ) : (
-                  <span className="text-[10px] font-mono text-zinc-600 uppercase">
+                  <span className="text-[10px] font-mono uppercase text-zinc-600">
                     {langIsGerman ? "Wartet" : "Waiting"}
                   </span>
                 )}
@@ -142,32 +275,72 @@ export default function BlackjackPage() {
               <div className="space-y-4">
                 {actionLabels.map((action, index) => {
                   const isLegal = analysis ? analysis.validFlags[index] : true;
+
                   const isBest =
                     analysis && analysis.bestActionIdx === index && isLegal;
+
                   const probability = analysis
                     ? analysis.probabilities[index]
                     : 0;
+
                   const percentage = isLegal
                     ? Math.round(probability * 100)
                     : 0;
 
                   return (
                     <div key={action}>
-                      <div className="flex items-center justify-between mb-1.5">
+                      <div
+                        className="
+                          mb-1.5
+                          flex items-center justify-between
+                        "
+                      >
                         <span
-                          className={`${isBest ? "text-emerald-400 font-bold" : isLegal ? "text-zinc-300" : "text-zinc-700"} text-[10px] font-mono uppercase tracking-wider`}
+                          className={`
+                            text-[10px] font-mono uppercase
+                            tracking-wider
+                            ${
+                              isBest
+                                ? "font-bold text-emerald-400"
+                                : isLegal
+                                  ? "text-zinc-300"
+                                  : "text-zinc-700"
+                            }
+                          `}
                         >
                           {action}
                         </span>
+
                         <span
-                          className={`${isBest ? "text-emerald-400 font-bold" : isLegal ? "text-zinc-500" : "text-zinc-700"} text-[10px] font-mono`}
+                          className={`
+                            text-[10px] font-mono
+                            ${
+                              isBest
+                                ? "font-bold text-emerald-400"
+                                : isLegal
+                                  ? "text-zinc-500"
+                                  : "text-zinc-700"
+                            }
+                          `}
                         >
                           {!isLegal ? "N/A" : `${percentage}%`}
                         </span>
                       </div>
-                      <div className="h-1 bg-zinc-900 overflow-hidden rounded-full">
+
+                      <div className="h-1 overflow-hidden rounded-full bg-zinc-900">
                         <div
-                          className={`${isBest ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" : isLegal ? "bg-zinc-700" : "bg-transparent"} h-full rounded-full transition-all duration-500`}
+                          className={`
+                            h-full
+                            rounded-full
+                            transition-all duration-500
+                            ${
+                              isBest
+                                ? "bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"
+                                : isLegal
+                                  ? "bg-zinc-700"
+                                  : "bg-transparent"
+                            }
+                          `}
                           style={{ width: `${percentage}%` }}
                         />
                       </div>
@@ -176,16 +349,38 @@ export default function BlackjackPage() {
                 })}
               </div>
 
-              <div className="mt-8 pt-5 border-t border-zinc-800/70">
-                <span className="block text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-600 mb-2">
+              <div
+                className="
+                  mt-8
+                  border-t border-zinc-800/70
+                  pt-5
+                "
+              >
+                <span
+                  className="
+                    mb-2 block
+                    text-[9px] font-mono uppercase
+                    tracking-[0.16em]
+                    text-zinc-600
+                  "
+                >
                   {langIsGerman ? "Empfehlung" : "Recommendation"}
                 </span>
+
                 <div className="text-xl font-mono font-bold text-white">
                   {analysis && analysis.bestActionIdx !== -1
                     ? actionLabels[analysis.bestActionIdx]
                     : "—"}
                 </div>
-                <p className="mt-2 text-[10px] leading-relaxed text-zinc-600 font-mono">
+
+                <p
+                  className="
+                    mt-2
+                    text-[10px] font-mono
+                    leading-relaxed
+                    text-zinc-600
+                  "
+                >
                   {langIsGerman
                     ? "Die Balken zeigen, wie stark der DQN-Agent die möglichen Aktionen für die aktuelle Hand bewertet."
                     : "The bars show how strongly the DQN agent values each available action for the current hand."}
@@ -195,10 +390,23 @@ export default function BlackjackPage() {
           </div>
         </section>
 
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
           <button
             onClick={() => setShowPolicy((prev) => !prev)}
-            className={`${showPolicy ? "border-emerald-500/40 text-emerald-400 bg-emerald-500/[0.05]" : "border-zinc-800 text-zinc-500 hover:text-zinc-200 hover:border-zinc-700"} text-[10px] sm:text-xs font-mono uppercase tracking-wider py-2 px-4 border rounded-full transition-all`}
+            className={`
+              rounded-full
+              border
+              px-4 py-2
+              text-[10px] font-mono uppercase
+              tracking-wider
+              transition-all
+              sm:text-xs
+              ${
+                showPolicy
+                  ? "border-emerald-500/40 bg-emerald-500/[0.05] text-emerald-400"
+                  : "border-zinc-800 text-zinc-500 hover:border-zinc-700 hover:text-zinc-200"
+              }
+            `}
           >
             {showPolicy
               ? langIsGerman
@@ -210,45 +418,98 @@ export default function BlackjackPage() {
           </button>
         </div>
 
-        <div className="w-full max-w-5xl mx-auto mt-10 py-5 border-y border-zinc-800/70 grid grid-cols-2 sm:grid-cols-4 gap-y-5 sm:gap-y-0">
+        <div
+          className="
+            mx-auto mt-10
+            grid w-full max-w-5xl
+            grid-cols-2
+            gap-y-5
+            border-y border-zinc-800/70
+            py-5
+            sm:grid-cols-4
+            sm:gap-y-0
+          "
+        >
           <div className="text-center sm:border-r border-zinc-800/70">
-            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+            <div
+              className="
+                text-[9px] font-mono uppercase
+                tracking-[0.14em]
+                text-zinc-600
+              "
+            >
               {langIsGerman ? "Training" : "Training"}
             </div>
+
             <div className="mt-1 text-sm font-mono font-bold text-white">
               3.0M Hands
             </div>
           </div>
+
           <div className="text-center sm:border-r border-zinc-800/70">
-            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+            <div
+              className="
+                text-[9px] font-mono uppercase
+                tracking-[0.14em]
+                text-zinc-600
+              "
+            >
               {langIsGerman ? "Auswertung" : "Evaluation"}
             </div>
+
             <div className="mt-1 text-sm font-mono font-bold text-white">
               100k Games
             </div>
           </div>
+
           <div className="text-center sm:border-r border-zinc-800/70">
-            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+            <div
+              className="
+                text-[9px] font-mono uppercase
+                tracking-[0.14em]
+                text-zinc-600
+              "
+            >
               {langIsGerman ? "Winrate" : "Win Rate"}
             </div>
+
             <div className="mt-1 text-sm font-mono font-bold text-white">
               43.7%
             </div>
           </div>
+
           <div className="text-center">
-            <div className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.14em]">
+            <div
+              className="
+                text-[9px] font-mono uppercase
+                tracking-[0.14em]
+                text-zinc-600
+              "
+            >
               {langIsGerman ? "Erwartungswert" : "Expected Value"}
             </div>
+
             <div className="mt-1 text-sm font-mono font-bold text-emerald-400">
               ≈ 0.00 EV
             </div>
           </div>
         </div>
 
-        <div className="flex justify-center mt-10">
+        <div className="mt-10 flex justify-center">
           <button
             onClick={() => setShowTechDetails((prev) => !prev)}
-            className="text-xs font-mono text-zinc-500 hover:text-zinc-200 transition-colors flex items-center gap-2 py-2 px-4 rounded-full border border-zinc-800 hover:border-zinc-700 bg-zinc-900/30"
+            className="
+              flex items-center gap-2
+              rounded-full
+              border border-zinc-800
+              bg-zinc-900/30
+              px-4 py-2
+              text-xs font-mono
+              text-zinc-500
+              transition-colors
+              hover:border-zinc-700
+              hover:text-zinc-200
+            "
           >
             <span>
               {showTechDetails
@@ -259,8 +520,13 @@ export default function BlackjackPage() {
                   ? "Engine-Spezifikationen anzeigen"
                   : "Inspect Engine Specs"}
             </span>
+
             <span
-              className={`transition-transform duration-200 ${showTechDetails ? "rotate-180" : ""}`}
+              className={`
+                transition-transform
+                duration-200
+                ${showTechDetails ? "rotate-180" : ""}
+              `}
             >
               ↓
             </span>
@@ -269,9 +535,26 @@ export default function BlackjackPage() {
       </main>
 
       {showTechDetails && (
-        <footer className="w-full bg-zinc-950/90 border-t border-zinc-800/80 backdrop-blur-xl relative z-10 py-10">
-          <div className="max-w-5xl mx-auto px-6 sm:px-8">
-            <div className="flex overflow-x-auto border-b border-zinc-800/80 gap-6 text-xs font-mono mb-6">
+        <footer
+          className="
+            relative z-10
+            w-full
+            border-t border-zinc-800/80
+            bg-zinc-950/90
+            py-10
+            backdrop-blur-xl
+          "
+        >
+          <div className="mx-auto max-w-5xl px-6 sm:px-8">
+            <div
+              className="
+                mb-6
+                flex gap-6
+                overflow-x-auto
+                border-b border-zinc-800/80
+                text-xs font-mono
+              "
+            >
               {[
                 ["overview", langIsGerman ? "DQN-Aufbau" : "DQN Architecture"],
                 ["env", langIsGerman ? "Umgebung" : "Blackjack Environment"],
@@ -283,7 +566,17 @@ export default function BlackjackPage() {
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className={`${activeTab === id ? "border-emerald-400 text-emerald-400 font-bold" : "border-transparent text-zinc-500 hover:text-zinc-300"} pb-3 whitespace-nowrap border-b-2 transition`}
+                  className={`
+                    whitespace-nowrap
+                    border-b-2
+                    pb-3
+                    transition
+                    ${
+                      activeTab === id
+                        ? "border-emerald-400 font-bold text-emerald-400"
+                        : "border-transparent text-zinc-500 hover:text-zinc-300"
+                    }
+                  `}
                 >
                   {label}
                 </button>
@@ -291,25 +584,49 @@ export default function BlackjackPage() {
             </div>
 
             {activeTab === "overview" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+              <div
+                className="
+                  grid grid-cols-1
+                  gap-8
+                  text-xs text-zinc-400
+                  md:grid-cols-2
+                "
+              >
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman
                       ? "Von der Hand zur Aktion"
                       : "From Hand to Action"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Der DQN-Agent bekommt drei zentrale Werte der aktuellen Situation: den Wert der eigenen Hand, die offene Karte des Dealers und ob ein Ass als 11 gezählt wird. Das Netzwerk verarbeitet diese Eingabe mit zwei Hidden Layers mit jeweils 64 Neuronen und gibt für Stand, Hit, Double und Split je einen Q-Wert aus. Der höchste gültige Q-Wert bestimmt die empfohlene Aktion."
                       : "The DQN agent receives three key parts of the current situation: the player's hand value, the dealer's visible card, and whether the hand contains a soft ace. Two hidden layers with 64 neurons process this input and produce one Q-value for Stand, Hit, Double, and Split. The highest valid Q-value determines the recommended action."}
                   </p>
                 </div>
+
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman ? "Stabiles Q-Learning" : "Stable Q-Learning"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Während des Trainings speichert ein Replay Buffer bis zu 100.000 Erfahrungen. Daraus werden zufällige Batches von 128 Übergängen gezogen, damit das Netzwerk nicht nur aus direkt aufeinanderfolgenden Händen lernt. Ein separates Target Network wird alle 5.000 Hände aktualisiert und macht die Lernziele stabiler."
@@ -320,23 +637,47 @@ export default function BlackjackPage() {
             )}
 
             {activeTab === "env" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+              <div
+                className="
+                  grid grid-cols-1
+                  gap-8
+                  text-xs text-zinc-400
+                  md:grid-cols-2
+                "
+              >
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman ? "Spielzustand" : "Game State"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Die Umgebung bildet Blackjack gezielt für das Lernen ab. Neben den drei Modellwerten werden zusätzlich die verfügbaren Aktionen Double und Split markiert. Dadurch kann der Agent illegale Aktionen während der Auswahl und des Trainings ausblenden."
                       : "The environment represents Blackjack specifically for learning. In addition to the three model inputs, it tracks whether Double and Split are currently available. This lets the agent mask actions that are not legal in the current hand during action selection and training."}
                   </p>
                 </div>
+
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman ? "Regeln & Rewards" : "Rules & Rewards"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Jede neue Hand wird mit einem frisch gemischten Deck gestartet. Der Dealer bleibt bei Soft 17 stehen, ein Natural Blackjack wird mit 3:2 ausgezahlt und Double kann den Gewinn oder Verlust der Hand verdoppeln. Zusätzlich unterstützt die Umgebung Split als vierte Aktion."
@@ -347,23 +688,47 @@ export default function BlackjackPage() {
             )}
 
             {activeTab === "performance" && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs text-zinc-400">
+              <div
+                className="
+                  grid grid-cols-1
+                  gap-8
+                  text-xs text-zinc-400
+                  md:grid-cols-2
+                "
+              >
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman ? "3 Millionen Hände" : "3 Million Hands"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Der Agent trainiert über 3 Millionen Blackjack-Hände. Zu Beginn werden Aktionen zufällig gewählt, danach übernimmt das Netzwerk zunehmend die Entscheidungen, während die Exploration schrittweise reduziert wird."
                       : "The agent trains for 3 million Blackjack hands. At the beginning, actions are chosen randomly; later, the network increasingly controls the decisions while exploration is gradually reduced."}
                   </p>
                 </div>
+
                 <div>
-                  <div className="font-mono text-white text-sm font-semibold flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400" />
+                  <div
+                    className="
+                      flex items-center gap-2
+                      text-sm font-mono font-semibold
+                      text-white
+                    "
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-400" />
+
                     {langIsGerman ? "Gelernte Strategie" : "Learned Strategy"}
                   </div>
+
                   <p className="mt-2 leading-relaxed">
                     {langIsGerman
                       ? "Nach dem Training wird der Agent über 100.000 Spiele ausgewertet. Die gelernte Policy nähert sich dabei der etablierten Blackjack Basic Strategy an; die erwartete Auszahlung liegt bei ungefähr 0, was darauf hindeutet, dass der Agent den langfristigen Nachteil des Spielers weitgehend minimiert."

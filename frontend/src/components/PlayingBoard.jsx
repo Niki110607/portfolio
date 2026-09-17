@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import PlayingCard from "./PlayingCard";
 import { Game, actions } from "engine-blackjack";
 
@@ -92,11 +93,9 @@ export default function PlayingBoard({ onHint }) {
 
   const isBetting = stage === "ready";
   const isDone = stage === "done";
-
   const currentHand = stage === "player-turn-left" ? "left" : "right";
 
   const isRightHandActive = isPlayerTurn && currentHand === "right";
-
   const isLeftHandActive = isPlayerTurn && currentHand === "left";
 
   const getHandScore = (handValueObj) => {
@@ -166,39 +165,88 @@ export default function PlayingBoard({ onHint }) {
           relative
           w-full
           min-h-[500px]
-          sm:min-h-[540px]
+          overflow-hidden
           rounded-2xl
           border
           border-zinc-800/80
           bg-zinc-950/40
-          overflow-hidden
+          sm:min-h-[540px]
         "
       >
         {/* Ambient table glow */}
         <div
           className="
+            pointer-events-none
             absolute
             inset-0
-            pointer-events-none
             bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.055),transparent_58%)]
           "
         />
 
-        <div className="relative h-full min-h-[500px] sm:min-h-[540px] flex flex-col px-5 sm:px-8 py-5 sm:py-6">
+        <div
+          className="
+            relative
+            flex
+            h-full
+            min-h-[500px]
+            flex-col
+            px-5
+            py-5
+            sm:min-h-[540px]
+            sm:px-8
+            sm:py-6
+          "
+        >
           {/* Table header */}
-          <div className="flex items-center justify-between pb-4 border-b border-zinc-800/70">
+          <div
+            className="
+              flex
+              items-center
+              justify-between
+              border-b
+              border-zinc-800/70
+              pb-4
+            "
+          >
             <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.45)]" />
+              <span
+                className="
+                  h-2
+                  w-2
+                  rounded-full
+                  bg-emerald-400
+                  shadow-[0_0_10px_rgba(52,211,153,0.45)]
+                "
+              />
 
-              <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-white">
+              <span
+                className="
+                  text-xs
+                  font-mono
+                  font-bold
+                  uppercase
+                  tracking-wider
+                  text-white
+                  sm:text-sm
+                "
+              >
                 Blackjack
               </span>
             </div>
 
-            <div className="flex items-center gap-4 text-[10px] sm:text-xs font-mono">
+            <div
+              className="
+                flex
+                items-center
+                gap-4
+                text-[10px]
+                font-mono
+                sm:text-xs
+              "
+            >
               <span className="text-zinc-500">
                 Chips
-                <span className="ml-2 text-emerald-400 font-bold">
+                <span className="ml-2 font-bold text-emerald-400">
                   {chips}€
                 </span>
               </span>
@@ -206,11 +254,11 @@ export default function PlayingBoard({ onHint }) {
               {isBetting && bet > 0 && (
                 <span className="text-zinc-500">
                   Bet
-                  <span className="ml-2 text-amber-400 font-bold">{bet}€</span>
+                  <span className="ml-2 font-bold text-amber-400">{bet}€</span>
                 </span>
               )}
 
-              <span className="hidden sm:inline text-zinc-600">
+              <span className="hidden text-zinc-600 sm:inline">
                 {isBetting && "READY"}
                 {isPlayerTurn && `TURN / ${currentHand.toUpperCase()}`}
                 {stage === "dealer-turn" && "DEALER TURN"}
@@ -220,11 +268,28 @@ export default function PlayingBoard({ onHint }) {
           </div>
 
           {/* Game area */}
-          <div className="flex-1 flex flex-col justify-between py-8 sm:py-10">
+          <div
+            className="
+              flex
+              flex-1
+              flex-col
+              justify-between
+              py-8
+              sm:py-10
+            "
+          >
             {/* Dealer */}
             <div className="flex flex-col items-center">
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">
+              <div className="mb-4 flex items-center gap-3">
+                <span
+                  className="
+                    text-[10px]
+                    font-mono
+                    uppercase
+                    tracking-[0.18em]
+                    text-zinc-600
+                  "
+                >
                   Dealer
                 </span>
 
@@ -235,7 +300,17 @@ export default function PlayingBoard({ onHint }) {
                 )}
               </div>
 
-              <div className="flex items-center justify-center -space-x-8 sm:-space-x-10 min-h-[112px] sm:min-h-[144px]">
+              <div
+                className="
+                  flex
+                  min-h-[112px]
+                  items-center
+                  justify-center
+                  -space-x-8
+                  sm:min-h-[144px]
+                  sm:-space-x-10
+                "
+              >
                 {(gameState?.dealerCards || []).map((card, index) => (
                   <PlayingCard
                     key={`dealer-${card.suite}-${card.text}-${index}`}
@@ -256,14 +331,22 @@ export default function PlayingBoard({ onHint }) {
             </div>
 
             {/* Center divider */}
-            <div className="flex items-center gap-4 my-4">
-              <div className="flex-1 h-px bg-zinc-900" />
+            <div className="my-4 flex items-center gap-4">
+              <div className="h-px flex-1 bg-zinc-900" />
 
-              <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-zinc-700">
+              <span
+                className="
+                  text-[9px]
+                  font-mono
+                  uppercase
+                  tracking-[0.2em]
+                  text-zinc-700
+                "
+              >
                 vs
               </span>
 
-              <div className="flex-1 h-px bg-zinc-900" />
+              <div className="h-px flex-1 bg-zinc-900" />
             </div>
 
             {/* Player zone */}
@@ -285,7 +368,7 @@ export default function PlayingBoard({ onHint }) {
                       }
                     `}
                   >
-                    <div className="flex items-center gap-3 mb-4">
+                    <div className="mb-4 flex items-center gap-3">
                       <span
                         className={`
                           text-[10px]
@@ -317,11 +400,13 @@ export default function PlayingBoard({ onHint }) {
                       )}
                     </div>
 
-                    <div className="h-1 w-12 mb-3 rounded-full bg-zinc-800 overflow-hidden">
+                    <div className="mb-3 h-1 w-12 overflow-hidden rounded-full bg-zinc-800">
                       <div
-                        className={`h-full transition-all ${
-                          isLeftHandActive ? "w-full bg-emerald-400" : "w-0"
-                        }`}
+                        className={`
+                          h-full
+                          transition-all
+                          ${isLeftHandActive ? "w-full bg-emerald-400" : "w-0"}
+                        `}
                       />
                     </div>
 
@@ -355,7 +440,7 @@ export default function PlayingBoard({ onHint }) {
                   }
                 `}
               >
-                <div className="flex items-center gap-3 mb-4">
+                <div className="mb-4 flex items-center gap-3">
                   <span
                     className={`
                       text-[10px]
@@ -385,15 +470,28 @@ export default function PlayingBoard({ onHint }) {
                   )}
                 </div>
 
-                <div className="h-1 w-14 mb-3 rounded-full bg-zinc-800 overflow-hidden">
+                <div className="mb-3 h-1 w-14 overflow-hidden rounded-full bg-zinc-800">
                   <div
-                    className={`h-full transition-all duration-300 ${
-                      isRightHandActive ? "w-full bg-emerald-400" : "w-0"
-                    }`}
+                    className={`
+                      h-full
+                      transition-all
+                      duration-300
+                      ${isRightHandActive ? "w-full bg-emerald-400" : "w-0"}
+                    `}
                   />
                 </div>
 
-                <div className="flex items-center justify-center -space-x-8 sm:-space-x-10 min-h-[112px] sm:min-h-[144px]">
+                <div
+                  className="
+                    flex
+                    min-h-[112px]
+                    items-center
+                    justify-center
+                    -space-x-8
+                    sm:min-h-[144px]
+                    sm:-space-x-10
+                  "
+                >
                   {(gameState?.handInfo?.right?.cards || []).map(
                     (card, index) => (
                       <PlayingCard
@@ -409,20 +507,28 @@ export default function PlayingBoard({ onHint }) {
                     gameState.handInfo.right.cards.length === 0) && (
                     <div
                       className="
-                        w-20
+                        flex
                         h-28
-                        sm:w-24
-                        sm:h-36
+                        w-20
+                        items-center
+                        justify-center
                         rounded-xl
                         border
                         border-dashed
                         border-zinc-800
-                        flex
-                        items-center
-                        justify-center
+                        sm:h-36
+                        sm:w-24
                       "
                     >
-                      <span className="text-[9px] font-mono uppercase tracking-widest text-zinc-700">
+                      <span
+                        className="
+                          text-[9px]
+                          font-mono
+                          uppercase
+                          tracking-widest
+                          text-zinc-700
+                        "
+                      >
                         Awaiting Bet
                       </span>
                     </div>
@@ -433,25 +539,25 @@ export default function PlayingBoard({ onHint }) {
           </div>
 
           {/* Controls */}
-          <div className="pt-5 border-t border-zinc-800/70">
+          <div className="border-t border-zinc-800/70 pt-5">
             {isDone && (
               <div className="flex justify-center">
                 <button
                   onClick={handleReset}
                   className="
-                    px-7
-                    py-2.5
                     rounded-lg
                     bg-emerald-400
-                    text-zinc-950
+                    px-7
+                    py-2.5
                     font-mono
-                    font-bold
                     text-xs
+                    font-bold
                     uppercase
                     tracking-wider
-                    hover:brightness-110
+                    text-zinc-950
                     transition
                     active:scale-95
+                    hover:brightness-110
                   "
                 >
                   New Hand
@@ -460,7 +566,16 @@ export default function PlayingBoard({ onHint }) {
             )}
 
             {isBetting && (
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <div
+                className="
+                  flex
+                  flex-col
+                  items-center
+                  justify-center
+                  gap-3
+                  sm:flex-row
+                "
+              >
                 <button
                   onClick={() => {
                     handleAction(actions.deal({ bet }));
@@ -469,46 +584,59 @@ export default function PlayingBoard({ onHint }) {
                   disabled={bet === 0 || bet > chips}
                   className="
                     order-2
-                    sm:order-1
-                    px-7
-                    py-2.5
                     rounded-lg
                     bg-emerald-400
-                    text-zinc-950
+                    px-7
+                    py-2.5
                     font-mono
-                    font-bold
                     text-xs
+                    font-bold
                     uppercase
                     tracking-wider
+                    text-zinc-950
                     transition
-                    hover:brightness-110
                     active:scale-95
-                    disabled:opacity-30
                     disabled:pointer-events-none
+                    disabled:opacity-30
+                    hover:brightness-110
+                    sm:order-1
                   "
                 >
                   Deal
                   {bet > 0 ? ` · ${bet}€` : ""}
                 </button>
 
-                <div className="order-1 sm:order-2 flex items-center gap-1 p-1 rounded-lg border border-zinc-800 bg-zinc-950/70">
+                <div
+                  className="
+                    order-1
+                    flex
+                    items-center
+                    gap-1
+                    rounded-lg
+                    border
+                    border-zinc-800
+                    bg-zinc-950/70
+                    p-1
+                    sm:order-2
+                  "
+                >
                   {[5, 20, 100].map((amount) => (
                     <button
                       key={amount}
                       onClick={() => setBet((prev) => prev + amount)}
                       disabled={bet + amount > chips}
                       className="
+                        rounded-md
                         px-3
                         py-1.5
-                        rounded-md
-                        text-xs
                         font-mono
+                        text-xs
                         text-zinc-400
-                        hover:text-emerald-400
-                        hover:bg-zinc-900
                         transition
-                        disabled:opacity-30
                         disabled:pointer-events-none
+                        disabled:opacity-30
+                        hover:bg-zinc-900
+                        hover:text-emerald-400
                       "
                     >
                       +{amount}€
@@ -521,12 +649,12 @@ export default function PlayingBoard({ onHint }) {
                       className="
                         px-2
                         py-1.5
-                        text-[10px]
                         font-mono
-                        text-zinc-600
-                        hover:text-rose-400
+                        text-[10px]
                         uppercase
+                        text-zinc-600
                         transition
+                        hover:text-rose-400
                       "
                     >
                       Clear
@@ -547,21 +675,21 @@ export default function PlayingBoard({ onHint }) {
                     )
                   }
                   className="
-                    px-5
-                    py-2.5
                     rounded-lg
-                    bg-zinc-900
                     border
                     border-zinc-800
-                    text-zinc-200
+                    bg-zinc-900
+                    px-5
+                    py-2.5
                     font-mono
                     text-xs
                     uppercase
                     tracking-wider
-                    hover:border-zinc-600
-                    hover:text-white
+                    text-zinc-200
                     transition
                     active:scale-95
+                    hover:border-zinc-600
+                    hover:text-white
                   "
                 >
                   Hit
@@ -576,21 +704,21 @@ export default function PlayingBoard({ onHint }) {
                     )
                   }
                   className="
-                    px-5
-                    py-2.5
                     rounded-lg
-                    bg-zinc-900
                     border
                     border-zinc-800
-                    text-zinc-200
+                    bg-zinc-900
+                    px-5
+                    py-2.5
                     font-mono
                     text-xs
                     uppercase
                     tracking-wider
-                    hover:border-zinc-600
-                    hover:text-white
+                    text-zinc-200
                     transition
                     active:scale-95
+                    hover:border-zinc-600
+                    hover:text-white
                   "
                 >
                   Stand
@@ -615,23 +743,23 @@ export default function PlayingBoard({ onHint }) {
                     chips < (gameState?.handInfo?.[currentHand]?.bet || bet)
                   }
                   className="
-                    px-5
-                    py-2.5
                     rounded-lg
-                    bg-zinc-900
                     border
                     border-zinc-800
-                    text-zinc-200
+                    bg-zinc-900
+                    px-5
+                    py-2.5
                     font-mono
                     text-xs
                     uppercase
                     tracking-wider
-                    hover:border-zinc-600
-                    hover:text-white
+                    text-zinc-200
                     transition
                     active:scale-95
-                    disabled:opacity-25
                     disabled:pointer-events-none
+                    disabled:opacity-25
+                    hover:border-zinc-600
+                    hover:text-white
                   "
                 >
                   Double
@@ -656,23 +784,23 @@ export default function PlayingBoard({ onHint }) {
                     chips < (gameState?.handInfo?.[currentHand]?.bet || bet)
                   }
                   className="
-                    px-5
-                    py-2.5
                     rounded-lg
-                    bg-zinc-900
                     border
                     border-zinc-800
-                    text-zinc-200
+                    bg-zinc-900
+                    px-5
+                    py-2.5
                     font-mono
                     text-xs
                     uppercase
                     tracking-wider
-                    hover:border-zinc-600
-                    hover:text-white
+                    text-zinc-200
                     transition
                     active:scale-95
-                    disabled:opacity-25
                     disabled:pointer-events-none
+                    disabled:opacity-25
+                    hover:border-zinc-600
+                    hover:text-white
                   "
                 >
                   Split
@@ -691,22 +819,22 @@ export default function PlayingBoard({ onHint }) {
                   }
                   className="
                     ml-1
-                    px-5
-                    py-2.5
                     rounded-lg
-                    bg-emerald-500/[0.07]
                     border
                     border-emerald-500/35
-                    text-emerald-400
+                    bg-emerald-500/[0.07]
+                    px-5
+                    py-2.5
                     font-mono
-                    font-bold
                     text-xs
+                    font-bold
                     uppercase
                     tracking-wider
-                    hover:bg-emerald-500/[0.12]
-                    hover:border-emerald-400/60
+                    text-emerald-400
                     transition
                     active:scale-95
+                    hover:border-emerald-400/60
+                    hover:bg-emerald-500/[0.12]
                   "
                 >
                   Ask DQN

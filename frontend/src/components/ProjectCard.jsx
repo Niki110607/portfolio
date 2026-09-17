@@ -7,16 +7,19 @@ const PROJECT_THEMES = {
     label: "MACHINE LEARNING",
     number: "01",
   },
+
   blackjack: {
     theme: "casino",
     label: "REINFORCEMENT LEARNING",
     number: "02",
   },
+
   chess: {
     theme: "chess",
     label: "GAME AI",
     number: "03",
   },
+
   craft: {
     theme: "craft",
     label: "GENERATIVE SYSTEM",

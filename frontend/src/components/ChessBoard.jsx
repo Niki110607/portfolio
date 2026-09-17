@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
 
@@ -34,7 +35,6 @@ const createPiece = (pieceCode) =>
             height: "88%",
             userSelect: "none",
             pointerEvents: "none",
-
             // Slightly softer depth so the pieces separate
             // from the board without becoming flashy.
             filter: isBlack
@@ -50,6 +50,7 @@ const customPieces = Object.fromEntries(
   ["w", "b"].flatMap((side) =>
     PIECE_TYPES.map((type) => {
       const pieceCode = `${side}${type}`;
+
       return [pieceCode, createPiece(pieceCode)];
     }),
   ),
@@ -63,16 +64,13 @@ export default function ChessBoard({
   const chessGameRef = useRef(new Chess());
 
   const [chessPosition, setChessPosition] = useState(STARTING_POSITION);
-
   const [isThinking, setIsThinking] = useState(false);
-
   const [lastMove, setLastMove] = useState(null);
 
   useEffect(() => {
     chessGameRef.current = new Chess();
 
     setChessPosition(chessGameRef.current.fen());
-
     setLastMove(null);
     setIsThinking(false);
 
@@ -100,7 +98,6 @@ export default function ChessBoard({
       }
 
       const data = await response.json();
-
       const engineMove = chessGameRef.current.move(data.best_move);
 
       if (!engineMove) {
@@ -171,7 +168,6 @@ export default function ChessBoard({
           backgroundColor: "rgba(217, 119, 6, 0.16)",
           boxShadow: "inset 0 0 0 1px rgba(217,119,6,0.16)",
         },
-
         [lastMove.to]: {
           backgroundColor: "rgba(217, 119, 6, 0.34)",
           boxShadow: "inset 0 0 0 1px rgba(217,119,6,0.22)",
@@ -201,7 +197,6 @@ export default function ChessBoard({
       {/* =========================================
           CHESSBOARD
       ========================================== */}
-
       <Chessboard
         options={{
           id: "studio-chessboard",
@@ -219,7 +214,6 @@ export default function ChessBoard({
           darkSquareStyle: {
             backgroundColor: "#252932",
           },
-
           lightSquareStyle: {
             backgroundColor: "#3f4551",
           },
@@ -229,7 +223,6 @@ export default function ChessBoard({
             color: "rgba(255,255,255,0.32)",
             fontSize: "10px",
           },
-
           lightSquareNotationStyle: {
             color: "rgba(255,255,255,0.22)",
             fontSize: "10px",
@@ -241,10 +234,8 @@ export default function ChessBoard({
             // Reduced from the very heavy previous
             // inner shadow.
             boxShadow: "inset 0 0 16px rgba(0,0,0,0.48)",
-
             overflow: "hidden",
           },
-
           squareStyles,
         }}
       />

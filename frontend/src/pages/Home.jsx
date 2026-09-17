@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useApp } from "../context/AppContext";
 import ProjectCard from "../components/ProjectCard";
 
@@ -60,35 +61,117 @@ export default function Home() {
   const projects = getProjects(langIsGerman);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 font-sans overflow-x-hidden">
-      <div className="fixed left-1/2 top-[-260px] -translate-x-1/2 w-[650px] h-[650px] rounded-full bg-indigo-500/[0.025] blur-[180px] pointer-events-none" />
+    <div
+      className="
+        min-h-screen
+        overflow-x-hidden
+        bg-[#09090b]
+        font-sans
+        text-zinc-100
+      "
+    >
+      <div
+        className="
+          pointer-events-none
+          fixed
+          top-[-260px]
+          left-1/2
+          h-[650px]
+          w-[650px]
+          -translate-x-1/2
+          rounded-full
+          bg-indigo-500/[0.025]
+          blur-[180px]
+        "
+      />
 
-      <header className="relative z-10 w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between">
-        <span className="text-xs font-mono uppercase tracking-[0.16em] text-zinc-300">
+      <header
+        className="
+          relative
+          z-10
+          mx-auto
+          flex
+          w-full
+          max-w-5xl
+          items-center
+          justify-between
+          px-6
+          py-6
+        "
+      >
+        <span
+          className="
+            text-xs
+            font-mono
+            uppercase
+            tracking-[0.16em]
+            text-zinc-300
+          "
+        >
           Portfolio
         </span>
+
         <nav className="flex items-center gap-5 sm:gap-7">
           <a
             href="#work"
-            className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-zinc-600 hover:text-zinc-200 transition-colors"
+            className="
+              text-[10px]
+              font-mono
+              uppercase
+              tracking-wider
+              text-zinc-600
+              transition-colors
+              hover:text-zinc-200
+              sm:text-xs
+            "
           >
             {langIsGerman ? "Projekte" : "Projects"}
           </a>
+
           <a
             href="#skills"
-            className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-zinc-600 hover:text-zinc-200 transition-colors"
+            className="
+              text-[10px]
+              font-mono
+              uppercase
+              tracking-wider
+              text-zinc-600
+              transition-colors
+              hover:text-zinc-200
+              sm:text-xs
+            "
           >
             {langIsGerman ? "Skills" : "Skills"}
           </a>
+
           <a
             href="#education"
-            className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-zinc-600 hover:text-zinc-200 transition-colors"
+            className="
+              text-[10px]
+              font-mono
+              uppercase
+              tracking-wider
+              text-zinc-600
+              transition-colors
+              hover:text-zinc-200
+              sm:text-xs
+            "
           >
             {langIsGerman ? "Studium" : "Education"}
           </a>
+
           <a
             href="#contact"
-            className="text-[10px] sm:text-xs font-mono uppercase tracking-wider text-zinc-600 hover:text-zinc-200 transition-colors"
+            className="
+              text-[10px]
+              font-mono
+              uppercase
+              tracking-wider
+              text-zinc-600
+              transition-colors
+              hover:text-zinc-200
+              sm:text-xs
+            "
           >
             {langIsGerman ? "Kontakt" : "Contact"}
           </a>
@@ -96,39 +179,117 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        <div className="w-full max-w-5xl mx-auto px-6 pt-2 flex justify-end">
-          <div className="inline-flex items-center rounded-full border border-zinc-800 bg-zinc-900/70 p-1">
+        <div className="mx-auto flex w-full max-w-5xl justify-end px-6 pt-2">
+          <div
+            className="
+              inline-flex
+              items-center
+              rounded-full
+              border
+              border-zinc-800
+              bg-zinc-900/70
+              p-1
+            "
+          >
             <button
               type="button"
               aria-pressed={langIsGerman}
               onClick={() => setLangIsGerman(true)}
-              className={`rounded-full px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider transition-all ${langIsGerman ? "bg-zinc-100/10 text-zinc-100 border border-zinc-100/15" : "text-zinc-600 hover:text-zinc-300"}`}
+              className={`
+                rounded-full
+                border
+                px-3
+                py-1.5
+                text-[10px]
+                font-mono
+                uppercase
+                tracking-wider
+                transition-all
+                ${
+                  langIsGerman
+                    ? "border-zinc-100/15 bg-zinc-100/10 text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-300"
+                }
+              `}
             >
               DE
             </button>
+
             <button
               type="button"
               aria-pressed={!langIsGerman}
               onClick={() => setLangIsGerman(false)}
-              className={`rounded-full px-3 py-1.5 text-[10px] font-mono uppercase tracking-wider transition-all ${!langIsGerman ? "bg-zinc-100/10 text-zinc-100 border border-zinc-100/15" : "text-zinc-600 hover:text-zinc-300"}`}
+              className={`
+                rounded-full
+                border
+                px-3
+                py-1.5
+                text-[10px]
+                font-mono
+                uppercase
+                tracking-wider
+                transition-all
+                ${
+                  !langIsGerman
+                    ? "border-zinc-100/15 bg-zinc-100/10 text-zinc-100"
+                    : "text-zinc-600 hover:text-zinc-300"
+                }
+              `}
             >
               EN
             </button>
           </div>
         </div>
-        <section className="w-full max-w-5xl mx-auto px-6 pt-16 sm:pt-24 pb-24 sm:pb-32">
+
+        <section
+          className="
+            mx-auto
+            w-full
+            max-w-5xl
+            px-6
+            pt-16
+            pb-24
+            sm:pt-24
+            sm:pb-32
+          "
+        >
           <div className="max-w-3xl">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-[-0.055em] leading-[0.95] text-white">
+            <h1
+              className="
+                text-4xl
+                font-extrabold
+                leading-[0.95]
+                tracking-[-0.055em]
+                text-white
+                sm:text-5xl
+                md:text-6xl
+              "
+            >
               Niklas Pichler
             </h1>
 
-            <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs sm:text-sm font-mono text-zinc-600">
+            <div
+              className="
+                mt-5
+                flex
+                flex-wrap
+                items-center
+                gap-x-4
+                gap-y-2
+                text-xs
+                font-mono
+                text-zinc-600
+                sm:text-sm
+              "
+            >
               <span>
                 {langIsGerman
                   ? "Informatik · JKU Linz · ab Oktober 2026"
                   : "Computer Science · JKU Linz · starting October 2026"}
               </span>
+
               <span className="text-zinc-800">/</span>
+
               <span>
                 {langIsGerman
                   ? "Seitenstetten, Österreich"
@@ -136,28 +297,85 @@ export default function Home() {
               </span>
             </div>
 
-            <h2 className="mt-9 text-2xl sm:text-3xl md:text-4xl font-bold tracking-[-0.04em] leading-tight text-white">
+            <h2
+              className="
+                mt-9
+                text-2xl
+                font-bold
+                leading-tight
+                tracking-[-0.04em]
+                text-white
+                sm:text-3xl
+                md:text-4xl
+              "
+            >
               {langIsGerman
                 ? "Ich baue intelligente Systeme, um zu verstehen, wie sie funktionieren."
                 : "I build intelligent systems to understand how they work."}
             </h2>
 
-            <div className="mt-6 text-[10px] sm:text-xs font-mono uppercase tracking-[0.14em] text-zinc-600">
+            <div
+              className="
+                mt-6
+                text-[10px]
+                font-mono
+                uppercase
+                tracking-[0.14em]
+                text-zinc-600
+                sm:text-xs
+              "
+            >
               Machine Learning · Deep Learning · Algorithms
             </div>
           </div>
         </section>
+
         <section
           id="work"
-          className="w-full max-w-5xl mx-auto px-6 pb-24 sm:pb-32 scroll-mt-10"
+          className="
+            mx-auto
+            w-full
+            max-w-5xl
+            scroll-mt-10
+            px-6
+            pb-24
+            sm:pb-32
+          "
         >
-          <div className="flex items-end justify-between pb-4 border-b border-zinc-800/80">
+          <div
+            className="
+              flex
+              items-end
+              justify-between
+              border-b
+              border-zinc-800/80
+              pb-4
+            "
+          >
             <div>
-              <h2 className="mt-2 text-xl sm:text-2xl font-bold tracking-[-0.03em] text-white">
+              <h2
+                className="
+                  mt-2
+                  text-xl
+                  font-bold
+                  tracking-[-0.03em]
+                  text-white
+                  sm:text-2xl
+                "
+              >
                 {langIsGerman ? "Ausgewählte Projekte" : "Selected Projects"}
               </h2>
             </div>
-            <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-700">
+
+            <span
+              className="
+                text-[9px]
+                font-mono
+                uppercase
+                tracking-[0.16em]
+                text-zinc-700
+              "
+            >
               04 {langIsGerman ? "Projekte" : "Projects"}
             </span>
           </div>
@@ -168,16 +386,52 @@ export default function Home() {
             ))}
           </div>
         </section>
+
         <section
           id="skills"
-          className="w-full border-y border-zinc-800/70 scroll-mt-10"
+          className="
+            w-full
+            scroll-mt-10
+            border-y
+            border-zinc-800/70
+          "
         >
-          <div className="max-w-5xl mx-auto px-6 py-20 sm:py-24 grid grid-cols-1 md:grid-cols-[180px_minmax(0,1fr)] gap-10">
+          <div
+            className="
+              mx-auto
+              grid
+              max-w-5xl
+              grid-cols-1
+              gap-10
+              px-6
+              py-20
+              sm:py-24
+              md:grid-cols-[180px_minmax(0,1fr)]
+            "
+          >
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  uppercase
+                  tracking-[0.18em]
+                  text-zinc-600
+                "
+              >
                 {langIsGerman ? "Technischer Fokus" : "Technical Focus"}
               </span>
-              <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-[-0.035em] text-white">
+
+              <h2
+                className="
+                  mt-2
+                  text-2xl
+                  font-bold
+                  tracking-[-0.035em]
+                  text-white
+                  sm:text-3xl
+                "
+              >
                 {langIsGerman
                   ? "Werkzeuge für eigene Systeme."
                   : "Tools for building systems."}
@@ -185,28 +439,112 @@ export default function Home() {
             </div>
 
             <div>
-              <div className="divide-y divide-zinc-800/70 border-y border-zinc-800/70">
-                <div className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <span className="text-xs sm:text-sm font-mono text-zinc-500">
+              <div
+                className="
+                  divide-y
+                  divide-zinc-800/70
+                  border-y
+                  border-zinc-800/70
+                "
+              >
+                <div
+                  className="
+                    flex
+                    flex-col
+                    gap-2
+                    py-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                  "
+                >
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-500
+                      sm:text-sm
+                    "
+                  >
                     {langIsGerman ? "Machine Learning" : "Machine Learning"}
                   </span>
-                  <span className="text-xs sm:text-sm font-mono text-zinc-300">
+
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-300
+                      sm:text-sm
+                    "
+                  >
                     PyTorch · NumPy · Deep Learning
                   </span>
                 </div>
-                <div className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <span className="text-xs sm:text-sm font-mono text-zinc-500">
+
+                <div
+                  className="
+                    flex
+                    flex-col
+                    gap-2
+                    py-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                  "
+                >
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-500
+                      sm:text-sm
+                    "
+                  >
                     {langIsGerman ? "Algorithmen" : "Algorithms"}
                   </span>
-                  <span className="text-xs sm:text-sm font-mono text-zinc-300">
+
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-300
+                      sm:text-sm
+                    "
+                  >
                     Neural Networks · Reinforcement Learning
                   </span>
                 </div>
-                <div className="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <span className="text-xs sm:text-sm font-mono text-zinc-500">
+
+                <div
+                  className="
+                    flex
+                    flex-col
+                    gap-2
+                    py-4
+                    sm:flex-row
+                    sm:items-center
+                    sm:justify-between
+                  "
+                >
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-500
+                      sm:text-sm
+                    "
+                  >
                     {langIsGerman ? "Programmierung" : "Programming"}
                   </span>
-                  <span className="text-xs sm:text-sm font-mono text-zinc-300">
+
+                  <span
+                    className="
+                      text-xs
+                      font-mono
+                      text-zinc-300
+                      sm:text-sm
+                    "
+                  >
                     Python · JavaScript · Git
                   </span>
                 </div>
@@ -214,21 +552,63 @@ export default function Home() {
             </div>
           </div>
         </section>
+
         <section
           id="education"
-          className="w-full max-w-5xl mx-auto px-6 py-20 sm:py-24 scroll-mt-10"
+          className="
+            mx-auto
+            w-full
+            max-w-5xl
+            scroll-mt-10
+            px-6
+            py-20
+            sm:py-24
+          "
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-20">
+          <div
+            className="
+              grid
+              grid-cols-1
+              gap-12
+              md:grid-cols-2
+              md:gap-20
+            "
+          >
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  uppercase
+                  tracking-[0.18em]
+                  text-zinc-600
+                "
+              >
                 {langIsGerman ? "Studium" : "Education"}
               </span>
 
-              <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-[-0.035em] text-white">
+              <h2
+                className="
+                  mt-2
+                  text-2xl
+                  font-bold
+                  tracking-[-0.035em]
+                  text-white
+                  sm:text-3xl
+                "
+              >
                 JKU Linz
               </h2>
 
-              <div className="mt-2 text-sm sm:text-base font-mono text-zinc-400">
+              <div
+                className="
+                  mt-2
+                  text-sm
+                  font-mono
+                  text-zinc-400
+                  sm:text-base
+                "
+              >
                 {langIsGerman
                   ? "BSc Informatik · ab Oktober 2026"
                   : "BSc Computer Science · starting October 2026"}
@@ -236,15 +616,41 @@ export default function Home() {
             </div>
 
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  uppercase
+                  tracking-[0.18em]
+                  text-zinc-600
+                "
+              >
                 {langIsGerman ? "Auszeichnung" : "Achievement"}
               </span>
 
-              <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-[-0.035em] text-white">
+              <h2
+                className="
+                  mt-2
+                  text-2xl
+                  font-bold
+                  tracking-[-0.035em]
+                  text-white
+                  sm:text-3xl
+                "
+              >
                 Känguru der Mathematik
               </h2>
 
-              <div className="mt-2 text-sm sm:text-base font-mono text-zinc-400 leading-relaxed">
+              <div
+                className="
+                  mt-2
+                  text-sm
+                  font-mono
+                  leading-relaxed
+                  text-zinc-400
+                  sm:text-base
+                "
+              >
                 {langIsGerman ? (
                   <>
                     2025 · 1. Platz Niederösterreich · 5. Platz österreichweit
@@ -266,29 +672,91 @@ export default function Home() {
             </div>
           </div>
         </section>
+
         <section
           id="contact"
-          className="w-full border-t border-zinc-800/70 scroll-mt-10"
+          className="
+            w-full
+            scroll-mt-10
+            border-t
+            border-zinc-800/70
+          "
         >
-          <div className="max-w-5xl mx-auto px-6 py-20 sm:py-24 flex flex-col md:flex-row md:items-end md:justify-between gap-10">
+          <div
+            className="
+              mx-auto
+              flex
+              max-w-5xl
+              flex-col
+              gap-10
+              px-6
+              py-20
+              sm:py-24
+              md:flex-row
+              md:items-end
+              md:justify-between
+            "
+          >
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-600">
+              <span
+                className="
+                  text-[10px]
+                  font-mono
+                  uppercase
+                  tracking-[0.18em]
+                  text-zinc-600
+                "
+              >
                 {langIsGerman ? "Kontakt" : "Contact"}
               </span>
-              <h2 className="mt-2 text-3xl sm:text-4xl font-bold tracking-[-0.04em] text-white">
+
+              <h2
+                className="
+                  mt-2
+                  text-3xl
+                  font-bold
+                  tracking-[-0.04em]
+                  text-white
+                  sm:text-4xl
+                "
+              >
                 {langIsGerman
                   ? "Interesse an meiner Arbeit?"
                   : "Interested in my work?"}
               </h2>
             </div>
 
-            <div className="flex flex-col items-start md:items-end gap-2">
-              <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-600">
+            <div
+              className="
+                flex
+                flex-col
+                items-start
+                gap-2
+                md:items-end
+              "
+            >
+              <span
+                className="
+                  text-[9px]
+                  font-mono
+                  uppercase
+                  tracking-[0.16em]
+                  text-zinc-600
+                "
+              >
                 E-Mail
               </span>
+
               <a
                 href="mailto:pichlerniklas@icloud.com"
-                className="text-sm sm:text-base font-mono text-zinc-300 hover:text-white transition-colors"
+                className="
+                  text-sm
+                  font-mono
+                  text-zinc-300
+                  transition-colors
+                  hover:text-white
+                  sm:text-base
+                "
               >
                 pichlerniklas@icloud.com
               </a>
@@ -298,11 +766,39 @@ export default function Home() {
       </main>
 
       <footer className="border-t border-zinc-900 px-6 py-6">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-700">
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-5xl
+            flex-col
+            gap-3
+            sm:flex-row
+            sm:items-center
+            sm:justify-between
+          "
+        >
+          <span
+            className="
+              text-[9px]
+              font-mono
+              uppercase
+              tracking-[0.16em]
+              text-zinc-700
+            "
+          >
             {langIsGerman ? "Portfolio / Projekte" : "Portfolio / Projects"}
           </span>
-          <span className="text-[9px] font-mono uppercase tracking-[0.16em] text-zinc-800">
+
+          <span
+            className="
+              text-[9px]
+              font-mono
+              uppercase
+              tracking-[0.16em]
+              text-zinc-800
+            "
+          >
             Built with React
           </span>
         </div>

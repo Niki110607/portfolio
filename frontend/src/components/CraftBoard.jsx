@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 const INITIAL_ELEMENTS = [
   { emoji: "💧", name: "Water" },
@@ -31,7 +31,6 @@ export default function CraftBoard() {
     }
 
     const rect = mainAreaRef.current.getBoundingClientRect();
-
     const itemWidth = targetElement?.offsetWidth || 92;
     const itemHeight = targetElement?.offsetHeight || 62;
 
@@ -61,9 +60,7 @@ export default function CraftBoard() {
 
     const emoji = clickedItemNode.dataset.emoji;
     const name = clickedItemNode.dataset.name;
-
     const isBoardItem = clickedItemNode.classList.contains("board-card");
-
     const boardId = clickedItemNode.dataset.id;
 
     if (isBoardItem && combiningIds.includes(boardId)) {
@@ -90,7 +87,6 @@ export default function CraftBoard() {
 
     const handleWindowMouseMove = (e) => {
       const draggedNode = document.getElementById("dragged-card-ghost");
-
       const pos = getViewportPosition(e, draggedNode);
 
       setDraggedItem((prev) =>
@@ -107,9 +103,7 @@ export default function CraftBoard() {
     const handleWindowMouseUp = (e) => {
       if (mouseInObject(e, mainAreaRef.current)) {
         const draggedNode = document.getElementById("dragged-card-ghost");
-
         const canvasPos = getCanvasRelativePosition(e, draggedNode);
-
         const collisionItem = checkCollision(draggedNode);
 
         const droppedDraggedItem = {
@@ -131,12 +125,10 @@ export default function CraftBoard() {
     };
 
     window.addEventListener("mousemove", handleWindowMouseMove);
-
     window.addEventListener("mouseup", handleWindowMouseUp);
 
     return () => {
       window.removeEventListener("mousemove", handleWindowMouseMove);
-
       window.removeEventListener("mouseup", handleWindowMouseUp);
     };
   }, [draggedItem]);
@@ -147,7 +139,6 @@ export default function CraftBoard() {
     }
 
     const itemRect = draggedNode.getBoundingClientRect();
-
     const targetNodes = mainAreaRef.current.querySelectorAll(".board-card");
 
     for (const targetNode of targetNodes) {
@@ -253,7 +244,6 @@ export default function CraftBoard() {
       {/* =========================================
           MAIN WORKSPACE
       ========================================== */}
-
       <div
         className="
           relative
@@ -287,7 +277,6 @@ export default function CraftBoard() {
         {/* =========================================
             WORKSPACE HEADER
         ========================================== */}
-
         <div
           className="
             relative
@@ -355,17 +344,16 @@ export default function CraftBoard() {
         {/* =========================================
             CRAFTING CANVAS
         ========================================== */}
-
         <div
           id="main-area"
           ref={mainAreaRef}
           className="
             relative
             h-[420px]
-            sm:h-[500px]
-            lg:h-[540px]
             overflow-hidden
             bg-zinc-950
+            sm:h-[500px]
+            lg:h-[540px]
           "
         >
           {/* Subtle coordinate grid */}
@@ -423,10 +411,10 @@ export default function CraftBoard() {
               <div
                 className="
                   text-lg
-                  sm:text-xl
                   font-mono
                   font-semibold
                   text-zinc-500
+                  sm:text-xl
                 "
               >
                 Combine concepts
@@ -437,10 +425,10 @@ export default function CraftBoard() {
                   mt-2
                   max-w-xs
                   text-[10px]
-                  sm:text-xs
                   font-mono
                   leading-relaxed
                   text-zinc-700
+                  sm:text-xs
                 "
               >
                 Drag two elements into the workspace to generate something new.
@@ -468,7 +456,6 @@ export default function CraftBoard() {
           {/* =========================================
               BOARD ELEMENTS
           ========================================== */}
-
           {boardItems.map((item) => {
             const isCombining = combiningIds.includes(item.id);
 
@@ -522,7 +509,7 @@ export default function CraftBoard() {
                   }
                 `}
               >
-                <span className="text-xl sm:text-2xl leading-none">
+                <span className="text-xl leading-none sm:text-2xl">
                   {item.emoji}
                 </span>
 
@@ -597,7 +584,6 @@ export default function CraftBoard() {
         {/* =========================================
             INVENTORY DOCK
         ========================================== */}
-
         <div
           className="
             relative
@@ -632,12 +618,12 @@ export default function CraftBoard() {
             <span
               className="
                 hidden
-                sm:inline
                 text-[9px]
                 font-mono
                 uppercase
                 tracking-wider
                 text-zinc-700
+                sm:inline
               "
             >
               Drag into workspace
@@ -704,7 +690,6 @@ export default function CraftBoard() {
         {/* =========================================
             CONTROL STRIP
         ========================================== */}
-
         <div
           className="
             flex
@@ -774,7 +759,6 @@ export default function CraftBoard() {
       {/* =========================================
           DRAG GHOST
       ========================================== */}
-
       {draggedItem && (
         <div
           id="dragged-card-ghost"
