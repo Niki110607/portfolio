@@ -1,21 +1,31 @@
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
+
+import { useApp } from "../context/AppContext";
+
 import DrawingCanvas from "../components/DrawingCanvas";
 
 export default function CnnPage() {
+  const { langIsGerman } = useApp();
+
   const [prediction, setPrediction] = useState(null);
+
   const [probabilities, setProbabilities] = useState(Array(10).fill(0));
+
   const [showTechDetails, setShowTechDetails] = useState(false);
 
   const handlePrediction = (data) => {
     if (!data) return;
 
     setPrediction(data.digit);
+
     setProbabilities(data.probabilities || Array(10).fill(0));
   };
 
   const handleClear = () => {
     setPrediction(null);
+
     setProbabilities(Array(10).fill(0));
   };
 
@@ -25,71 +35,26 @@ export default function CnnPage() {
   return (
     <div
       data-theme="cnn"
-      className="
-        min-h-screen
-        bg-[var(--bg-main)]
-        text-[var(--color-text)]
-        flex
-        flex-col
-        font-sans
-        selection:bg-[var(--color-accent-glow)]
-        selection:text-[var(--color-accent)]
-        relative
-        overflow-x-hidden
-      "
+      className="min-h-screen bg-[var(--bg-main)] text-[var(--color-text)] flex flex-col font-sans selection:bg-[var(--color-accent-glow)] selection:text-[var(--color-accent)] relative overflow-x-hidden"
     >
-      {/* =========================================
-          AMBIENT BACKGROUND
-      ========================================== */}
+      {/* =========================================*
 
-      <div
-        className="
-          fixed
-          top-1/2
-          left-1/2
-          -translate-x-1/2
-          -translate-y-1/2
-          w-[850px]
-          h-[850px]
-          rounded-full
-          bg-[var(--color-accent-glow)]
-          blur-[220px]
-          opacity-20
-          pointer-events-none
-        "
-      />
+          *AMBIENT BACKGROUND*
 
-      {/* =========================================
-          TOP HEADER
-      ========================================== */}
+      *========================================== */}
 
-      <header
-        className="
-          w-full
-          max-w-5xl
-          mx-auto
-          px-6
-          py-6
-          flex
-          items-center
-          justify-between
-          relative
-          z-10
-        "
-      >
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[850px] rounded-full bg-[var(--color-accent-glow)] blur-[220px] opacity-20 pointer-events-none" />
+
+      {/* =========================================*
+
+          *TOP HEADER*
+
+      *========================================== */}
+
+      <header className="w-full max-w-5xl mx-auto px-6 py-6 flex items-center justify-between relative z-10">
         <Link
           to="/"
-          className="
-            group
-            flex
-            items-center
-            gap-2
-            text-xs
-            font-mono
-            text-zinc-500
-            transition-colors
-            hover:text-white
-          "
+          className="group flex items-center gap-2 text-xs font-mono text-zinc-500 transition-colors hover:text-white"
         >
           <span className="transition-transform group-hover:-translate-x-1">
             ←
@@ -98,18 +63,10 @@ export default function CnnPage() {
           <span>Portfolio</span>
         </Link>
 
-        <span
-          className="
-            text-[10px]
-            sm:text-xs
-            font-mono
-            uppercase
-            tracking-[0.16em]
-            text-zinc-400
-          "
-        >
+        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-[0.16em] text-zinc-400">
           CNN Vision Engine
         </span>
+
         <a
           href="https://github.com/Niki110607/CNN-from-scratch-numpy-"
           target="_blank"
@@ -126,271 +83,122 @@ export default function CnnPage() {
           </svg>
 
           <span>GitHub</span>
+
           <span className="text-[10px]">↗</span>
         </a>
       </header>
 
-      {/* =========================================
+      {/* =========================================*
+
           MAIN
-      ========================================== */}
 
-      <main
-        className="
-          relative
-          z-10
-          flex-1
-          w-full
-          max-w-5xl
-          mx-auto
-          px-6
-          pb-16
-        "
-      >
-        {/* =========================================
-            PROJECT INTRO
-        ========================================== */}
+      *========================================== */}
 
-        <div
-          className="
-            text-center
-            pt-10
-            sm:pt-14
-            pb-11
-            sm:pb-13
-          "
-        >
-          <h1
-            className="
-              text-3xl
-              sm:text-4xl
-              md:text-5xl
-              font-extrabold
-              tracking-[-0.04em]
-              text-white
-            "
-          >
-            Handwritten Digit Classifier
+      <main className="relative z-10 flex-1 w-full max-w-5xl mx-auto px-6 pb-16">
+        {/* =========================================*
+
+            *PROJECT INTRO*
+
+        *========================================== */}
+
+        <div className="text-center pt-10 sm:pt-14 pb-11 sm:pb-13">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-[-0.04em] text-white">
+            {langIsGerman ? "CNN from Scratch" : "CNN from Scratch"}
           </h1>
 
-          <p
-            className="
-              mt-3
-              text-xs
-              sm:text-sm
-              font-mono
-              text-zinc-400
-            "
-          >
-            Custom neural network built with pure NumPy
+          <p className="mt-3 text-xs sm:text-sm font-mono text-zinc-400">
+            {langIsGerman
+              ? "Ein CNN zur Erkennung handschriftlicher Ziffern, komplett mit NumPy implementiert"
+              : "A CNN for handwritten digit recognition, built entirely with NumPy"}
           </p>
         </div>
 
-        {/* =========================================
-            WORKSPACE LABEL
-        ========================================== */}
+        {/* =========================================*
 
-        <div
-          className="
-            flex
-            items-center
-            justify-between
-            mb-3
-            px-1
-          "
-        >
-          <span
-            className="
-              text-[10px]
-              sm:text-[11px]
-              font-mono
-              uppercase
-              tracking-[0.14em]
-              text-zinc-500
-            "
-          >
-            Vision Workspace
+            *WORKSPACE LABEL*
+
+        *========================================== */}
+
+        <div className="flex items-center justify-between mb-3 px-1">
+          <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.14em] text-zinc-500">
+            {langIsGerman ? "Ziffern-Eingabe" : "Digit Input"}
           </span>
 
           <div className="flex items-center gap-2">
-            <span
-              className="
-                w-2
-                h-2
-                rounded-full
-                bg-[var(--color-accent)]
-                shadow-[0_0_10px_var(--color-accent-glow)]
-              "
-            />
+            <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse shadow-[0_0_10px_var(--color-accent-glow)]" />
 
             <span className="text-[10px] sm:text-[11px] font-mono text-zinc-300">
-              Inference Ready
+              {langIsGerman ? "Bereit zur Erkennung" : "Inference Ready"}
             </span>
           </div>
         </div>
 
-        {/* =========================================
-            MAIN VISION WORKSPACE
-        ========================================== */}
+        {/* =========================================*
 
-        <section
-          className="
-            w-full
-            max-w-4xl
-            mx-auto
-            border-t
-            border-b
-            border-zinc-800/70
-            py-5
-          "
-        >
-          <div
-            className="
-              grid
-              grid-cols-1
-              lg:grid-cols-[minmax(0,1fr)_220px]
-              items-center
-            "
-          >
-            {/* =====================================
-                DRAWING STAGE
-            ====================================== */}
+            *MAIN VISION WORKSPACE*
 
-            <div
-              className="
-                min-w-0
-                flex
-                justify-center
-                lg:pr-8
-              "
-            >
+        *========================================== */}
+
+        <section className="w-full max-w-4xl mx-auto border-t border-b border-zinc-800/70 py-5">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_220px] items-center">
+            {/* =====================================*
+
+                *DRAWING STAGE*
+
+            *====================================== */}
+
+            <div className="min-w-0 flex justify-center lg:pr-8">
               <DrawingCanvas
                 onPrediction={handlePrediction}
                 onClear={handleClear}
               />
             </div>
 
-            {/* =====================================
-                INFERENCE TELEMETRY
-            ====================================== */}
+            {/* =====================================*
 
-            <aside
-              className="
-                mt-8
-                lg:mt-0
-                pt-7
-                lg:pt-0
-                lg:pl-7
-                border-t
-                lg:border-t-0
-                lg:border-l
-                border-zinc-800/70
-              "
-            >
+                *INFERENCE TELEMETRY*
+
+            *====================================== */}
+
+            <aside className="mt-8 lg:mt-0 pt-7 lg:pt-0 lg:pl-7 border-t lg:border-t-0 lg:border-l border-zinc-800/70">
               <div className="flex items-center justify-between mb-4">
-                <span
-                  className="
-                    text-[10px]
-                    font-mono
-                    uppercase
-                    tracking-[0.14em]
-                    text-zinc-500
-                  "
-                >
-                  Inference Output
+                <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-zinc-500">
+                  {langIsGerman ? "Vorhersage" : "Prediction"}
                 </span>
 
                 {prediction !== null && (
-                  <span
-                    className="
-                      text-[9px]
-                      font-mono
-                      uppercase
-                      tracking-widest
-                      text-[var(--color-accent)]
-                    "
-                  >
-                    Result
+                  <span className="text-[9px] font-mono uppercase tracking-widest text-[var(--color-accent)]">
+                    {langIsGerman ? "Ergebnis" : "Result"}
                   </span>
                 )}
               </div>
 
-              <div
-                className="
-                  min-h-[150px]
-                  flex
-                  flex-col
-                  justify-center
-                  transition-all
-                  duration-300
-                "
-              >
+              <div className="min-h-[150px] flex flex-col justify-center transition-all duration-300">
                 {prediction !== null ? (
                   <>
-                    <div
-                      className="
-                        text-[7rem]
-                        sm:text-[8rem]
-                        font-mono
-                        font-black
-                        leading-[0.8]
-                        tracking-[-0.08em]
-                        text-white
-                      "
-                    >
+                    <div className="text-[7rem] sm:text-[8rem] font-mono font-black leading-[0.8] tracking-[-0.08em] text-white">
                       {prediction}
                     </div>
 
                     <div className="mt-5 flex items-center gap-3">
-                      <span
-                        className="
-                          h-2
-                          w-2
-                          rounded-full
-                          bg-[var(--color-accent)]
-                          shadow-[0_0_10px_var(--color-accent-glow)]
-                        "
-                      />
+                      <span className="h-2 w-2 rounded-full bg-[var(--color-accent)] shadow-[0_0_10px_var(--color-accent-glow)]" />
 
-                      <span
-                        className="
-                          text-xs
-                          font-mono
-                          font-bold
-                          text-[var(--color-accent)]
-                        "
-                      >
-                        {maxConfidence}% confidence
+                      <span className="text-xs font-mono font-bold text-[var(--color-accent)]">
+                        {maxConfidence}%{" "}
+                        {langIsGerman ? "Wahrscheinlichkeit" : "probability"}
                       </span>
                     </div>
                   </>
                 ) : (
                   <>
                     <div
-                      className={`
-                        text-[7rem]
-                        sm:text-[8rem]
-                        font-mono
-                        font-black
-                        leading-[0.8]
-                        tracking-[-0.08em]
-                        text-zinc-900
-                        ${prediction !== null ? "opacity-100" : "opacity-0"}
-                      `}
+                      className={`text-[7rem] sm:text-[8rem] font-mono font-black leading-[0.8] tracking-[-0.08em] text-zinc-900 ${prediction !== null ? "opacity-100" : "opacity-0"}`}
                     >
                       placeholder
                     </div>
 
-                    <span
-                      className="
-                        mt-5
-                        text-[10px]
-                        font-mono
-                        uppercase
-                        tracking-[0.16em]
-                        text-zinc-700
-                      "
-                    >
-                      Awaiting Input
+                    <span className="mt-5 text-[10px] font-mono uppercase tracking-[0.16em] text-zinc-700">
+                      {langIsGerman ? "Ziffer zeichnen" : "Draw a digit"}
                     </span>
                   </>
                 )}
@@ -399,99 +207,40 @@ export default function CnnPage() {
           </div>
         </section>
 
-        {/* =========================================
-            PROBABILITY SPECTRUM
-        ========================================== */}
+        {/* =========================================*
 
-        <section
-          className="
-            w-full
-            max-w-4xl
-            mx-auto
-            mt-8
-          "
-        >
-          <div
-            className="
-              flex
-              items-center
-              justify-between
-              mb-4
-              px-1
-            "
-          >
-            <span
-              className="
-                text-[10px]
-                font-mono
-                uppercase
-                tracking-[0.14em]
-                text-zinc-500
-              "
-            >
-              Probability Spectrum
+            *PROBABILITY SPECTRUM*
+
+        *========================================== */}
+
+        <section className="w-full max-w-4xl mx-auto mt-8">
+          <div className="flex items-center justify-between mb-4 px-1">
+            <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-zinc-500">
+              Prediction Probabilities
             </span>
 
-            <span
-              className="
-                text-[9px]
-                font-mono
-                uppercase
-                tracking-wider
-                text-zinc-700
-              "
-            >
-              Classes 0–9
+            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-700">
+              {langIsGerman ? "Ziffern 0–9" : "Digits 0–9"}
             </span>
           </div>
 
           <div className="grid grid-cols-10 gap-2 sm:gap-3">
             {probabilities.map((probability, index) => {
               const isTop = prediction === index;
+
               const percentage = Math.round(probability * 100);
 
               return (
-                <div
-                  key={index}
-                  className="
-                    group
-                    flex
-                    flex-col
-                    items-center
-                  "
-                >
+                <div key={index} className="group flex flex-col items-center">
                   {/* Bar */}
-                  <div
-                    className="
-                      relative
-                      flex
-                      h-20
-                      sm:h-24
-                      w-full
-                      items-end
-                      overflow-hidden
-                      border-b
-                      border-zinc-800/80
-                    "
-                  >
+
+                  <div className="relative flex h-20 sm:h-24 w-full items-end overflow-hidden border-b border-zinc-800/80">
                     <div
-                      className={`
-                        absolute
-                        bottom-0
-                        left-0
-                        w-full
-                        rounded-t-sm
-                        transition-all
-                        duration-500
-                        ${
-                          isTop
-                            ? "bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent-glow)]"
-                            : "bg-zinc-800 group-hover:bg-zinc-700"
-                        }
-                      `}
+                      className={`absolute bottom-0 left-0 w-full rounded-t-sm transition-all duration-500 ${isTop ? "bg-[var(--color-accent)] shadow-[0_0_12px_var(--color-accent-glow)]" : "bg-zinc-800 group-hover:bg-zinc-700"}`}
                       style={{
                         height: `${Math.max(
                           percentage,
+
                           probability > 0 ? 3 : 1,
                         )}%`,
                       }}
@@ -499,30 +248,17 @@ export default function CnnPage() {
                   </div>
 
                   {/* Class */}
+
                   <span
-                    className={`
-                      mt-2
-                      text-[10px]
-                      font-mono
-                      transition-colors
-                      ${
-                        isTop
-                          ? "font-bold text-[var(--color-accent)]"
-                          : "text-zinc-500 group-hover:text-zinc-300"
-                      }
-                    `}
+                    className={`mt-2 text-[10px] font-mono transition-colors ${isTop ? "font-bold text-[var(--color-accent)]" : "text-zinc-500 group-hover:text-zinc-300"}`}
                   >
                     {index}
                   </span>
 
                   {/* Percentage */}
+
                   <span
-                    className={`
-                      mt-0.5
-                      text-[8px]
-                      font-mono
-                      ${isTop ? "text-[var(--color-accent)]" : "text-zinc-700"}
-                    `}
+                    className={`mt-0.5 text-[8px] font-mono ${isTop ? "text-[var(--color-accent)]" : "text-zinc-700"}`}
                   >
                     {percentage}%
                   </span>
@@ -532,162 +268,79 @@ export default function CnnPage() {
           </div>
         </section>
 
-        {/* =========================================
-            TECHNICAL METRICS
-        ========================================== */}
+        {/* =========================================*
 
-        <section
-          className="
-            w-full
-            max-w-4xl
-            mx-auto
-            mt-9
-            py-5
-            border-y
-            border-zinc-800/70
-          "
-        >
-          <div
-            className="
-              grid
-              grid-cols-1
-              sm:grid-cols-3
-              gap-y-5
-              sm:gap-y-0
-            "
-          >
-            {/* Accuracy */}
-            <div
-              className="
-                text-center
-                sm:border-r
-                border-zinc-800/70
-              "
-            >
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
-                Accuracy
+            *TECHNICAL METRICS*
+
+        *========================================== */}
+
+        <section className="w-full max-w-4xl mx-auto mt-9 py-5 border-y border-zinc-800/70">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-5 sm:gap-y-0">
+            {/* Dataset */}
+            <div className="text-center sm:border-r border-zinc-800/70">
+              <div className="text-[9px] font-mono uppercase tracking-[0.14em] text-zinc-600">
+                {langIsGerman ? "Datensatz" : "Dataset"}
               </div>
-
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-white
-                "
-              >
-                98.8%
+              <div className="mt-1 text-sm font-mono font-bold text-white">
+                MNIST
               </div>
             </div>
 
             {/* Loss */}
-            <div
-              className="
-                text-center
-                sm:border-r
-                border-zinc-800/70
-              "
-            >
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
-                Loss Function
+            <div className="text-center sm:border-r border-zinc-800/70">
+              <div className="text-[9px] font-mono uppercase tracking-[0.14em] text-zinc-600">
+                {langIsGerman ? "Loss-Funktion" : "Loss Function"}
               </div>
-
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-white
-                "
-              >
+              <div className="mt-1 text-sm font-mono font-bold text-white">
                 Cross-Entropy
               </div>
             </div>
 
-            {/* Optimizer */}
-            <div className="text-center">
-              <div
-                className="
-                  text-[9px]
-                  font-mono
-                  uppercase
-                  tracking-[0.14em]
-                  text-zinc-600
-                "
-              >
-                Optimizer
+            {/* Parameters */}
+            <div className="text-center sm:border-r border-zinc-800/70">
+              <div className="text-[9px] font-mono uppercase tracking-[0.14em] text-zinc-600">
+                {langIsGerman ? "Parameter" : "Parameters"}
               </div>
+              <div className="mt-1 text-sm font-mono font-bold text-white">
+                206,922
+              </div>
+            </div>
 
-              <div
-                className="
-                  mt-1
-                  text-sm
-                  font-mono
-                  font-bold
-                  text-[var(--color-accent)]
-                "
-              >
-                Adam
+            {/* Accuracy */}
+            <div className="text-center">
+              <div className="text-[9px] font-mono uppercase tracking-[0.14em] text-zinc-600">
+                {langIsGerman ? "Genauigkeit" : "Accuracy"}
+              </div>
+              <div className="mt-1 text-sm font-mono font-bold text-[var(--color-accent)]">
+                98.5%
               </div>
             </div>
           </div>
         </section>
 
-        {/* =========================================
-            TECHNICAL DETAILS TRIGGER
-        ========================================== */}
+        {/* =========================================*
+
+            *TECHNICAL DETAILS TRIGGER*
+
+        *========================================== */}
 
         <div className="flex justify-center mt-10">
           <button
             onClick={() => setShowTechDetails((prev) => !prev)}
-            className="
-              flex
-              items-center
-              gap-2
-              rounded-full
-              border
-              border-zinc-800
-              bg-zinc-900/30
-              px-4
-              py-2
-              text-xs
-              font-mono
-              text-zinc-500
-              transition-colors
-              hover:border-zinc-700
-              hover:text-zinc-200
-            "
+            className="flex items-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/30 px-4 py-2 text-xs font-mono text-zinc-500 transition-colors hover:border-zinc-700 hover:text-zinc-200"
           >
             <span>
               {showTechDetails
-                ? "Hide Architecture Specs"
-                : "Inspect Architecture Specs"}
+                ? langIsGerman
+                  ? "Architektur ausblenden"
+                  : "Hide Architecture Specs"
+                : langIsGerman
+                  ? "Architektur ansehen"
+                  : "Inspect Architecture Specs"}
             </span>
 
             <span
-              className={`
-                transition-transform
-                duration-200
-                ${showTechDetails ? "rotate-180" : ""}
-              `}
+              className={`transition-transform duration-200 ${showTechDetails ? "rotate-180" : ""}`}
             >
               ↓
             </span>
@@ -695,127 +348,67 @@ export default function CnnPage() {
         </div>
       </main>
 
-      {/* =========================================
-          TECHNICAL DRAWER
-      ========================================== */}
+      {/* =========================================*
+
+          *TECHNICAL DRAWER*
+
+      *========================================== */}
 
       {showTechDetails && (
-        <footer
-          className="
-            w-full
-            bg-zinc-950/95
-            border-t
-            border-zinc-800/80
-            backdrop-blur-xl
-            relative
-            z-10
-            py-10
-          "
-        >
-          <div
-            className="
-              max-w-5xl
-              mx-auto
-              px-6
-            "
-          >
-            <div
-              className="
-                grid
-                grid-cols-1
-                md:grid-cols-3
-                gap-8
-                text-xs
-                text-zinc-400
-              "
-            >
-              {/* Network pipeline */}
+        <footer className="w-full bg-zinc-950/95 border-t border-zinc-800/80 backdrop-blur-xl relative z-10 py-10">
+          <div className="max-w-5xl mx-auto px-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs text-zinc-400">
               <div>
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                    font-mono
-                    font-semibold
-                    text-white
-                  "
-                >
+                <div className="flex items-center gap-2 text-sm font-mono font-semibold text-white">
                   <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
-                  Network Pipeline
+                  {langIsGerman ? "Merkmale erkennen" : "Extract Features"}
                 </div>
-
                 <p className="mt-2 leading-relaxed">
-                  Processes 28×28 grayscale inputs through 3×3 convolution
-                  kernels, MaxPool downsampling, and dense Softmax layers.
+                  {langIsGerman
+                    ? "Das 28×28 Graustufenbild wird durch zwei Convolution-Schichten verarbeitet. Die erste nutzt 16, die zweite 32 Filter mit 3×3-Kern. Max Pooling reduziert danach jeweils die Bildgröße und lässt die wichtigsten Merkmale erhalten."
+                    : "The 28×28 grayscale image passes through two convolution layers. The first uses 16 and the second 32 filters with 3×3 kernels. Max Pooling then reduces the image size while keeping the most important features."}
                 </p>
               </div>
 
-              {/* Vectorization */}
               <div>
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                    font-mono
-                    font-semibold
-                    text-white
-                  "
-                >
-                  <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                  Vectorization
+                <div className="flex items-center gap-2 text-sm font-mono font-semibold text-white">
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+                  {langIsGerman
+                    ? "Berechnung beschleunigen"
+                    : "Speed Up the Computation"}
                 </div>
-
                 <p className="mt-2 leading-relaxed">
-                  Uses <code className="text-zinc-200 font-mono">im2col</code>{" "}
-                  memory flattening to transform sliding convolutions into
-                  matrix multiplications.
+                  {langIsGerman ? (
+                    <>
+                      Die Layer und ihre Backpropagation sind vollständig selbst
+                      mit NumPy implementiert.{" "}
+                      <code className="text-zinc-200 font-mono">im2col</code>{" "}
+                      ordnet die kleinen Bildausschnitte so an, dass die
+                      Convolution mit schneller Matrixmultiplikation berechnet
+                      werden kann.
+                    </>
+                  ) : (
+                    <>
+                      The layers and their backpropagation are implemented
+                      directly with NumPy.{" "}
+                      <code className="text-zinc-200 font-mono">im2col</code>{" "}
+                      rearranges the small image regions so convolution can be
+                      computed with fast matrix multiplication.
+                    </>
+                  )}
                 </p>
               </div>
 
-              {/* Model metrics */}
               <div>
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                    text-sm
-                    font-mono
-                    font-semibold
-                    text-white
-                  "
-                >
-                  <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                  Model Metrics
+                <div className="flex items-center gap-2 text-sm font-mono font-semibold text-white">
+                  <span className="w-2 h-2 rounded-full bg-[var(--color-accent)]" />
+                  {langIsGerman ? "Ziffer vorhersagen" : "Predict the Digit"}
                 </div>
-
-                <div
-                  className="
-                    mt-3
-                    font-mono
-                    text-[11px]
-                    text-zinc-300
-                  "
-                >
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-800/60">
-                    <span className="text-zinc-600">Accuracy</span>
-                    <span className="text-emerald-400">98.8%</span>
-                  </div>
-
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-800/60">
-                    <span className="text-zinc-600">Loss</span>
-                    <span>Cross-Entropy</span>
-                  </div>
-
-                  <div className="flex items-center justify-between py-1">
-                    <span className="text-zinc-600">Optimizer</span>
-                    <span>Adam</span>
-                  </div>
-                </div>
+                <p className="mt-2 leading-relaxed">
+                  {langIsGerman
+                    ? "Nach dem Pooling bleiben 32 Feature Maps mit 7×7 Pixeln übrig. Diese 1568 Werte gehen durch 128 Neuronen und anschließend auf zehn Ausgaben – eine für jede Ziffer von 0 bis 9. Softmax wandelt sie in Wahrscheinlichkeiten um. Beim Training misst Cross-Entropy den Fehler, und Adam aktualisiert die Gewichte anhand der von Backpropagation berechneten Gradienten."
+                    : "After pooling, 32 feature maps of 7×7 pixels remain, giving 1568 values. They pass through 128 neurons and then to ten outputs, one for each digit from 0 to 9. Softmax turns them into probabilities. During training, cross-entropy measures the error, while Adam updates the weights using gradients computed by backpropagation."}
+                </p>
               </div>
             </div>
           </div>
