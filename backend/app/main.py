@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.blackjack import router as bj_router
@@ -28,3 +28,7 @@ async def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.head("/health", status_code=204)
+def health_head():
+    return Response(status_code=204)
