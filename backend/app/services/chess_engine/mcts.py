@@ -291,6 +291,8 @@ class MCTS:
         elif evaluation < -1.0:
             evaluation = -1.0
 
+        self._print_infos()
+
         return best_move, self._eval_to_cp(evaluation)
 
 
