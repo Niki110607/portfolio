@@ -151,7 +151,7 @@ class MCTS:
     def __init__(self):
         self.current_node = Node(1)
         self.current_board = chess.Board()
-        self.batch_size = 16
+        self.batch_size = 1
         self.game_started = False
 
         self.all_moves, self.move_to_idx = get_all_moves()
