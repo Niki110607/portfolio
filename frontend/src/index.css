@@ -8,6 +8,35 @@
   --color-text: #f4f4f5;
 }
 
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+@media (pointer: coarse) {
+  button,
+  [role="button"] {
+    min-height: 44px;
+  }
+  button {
+    font: inherit;
+  }
+}
+
 /* Scoped Theme Palettes */
 [data-theme="casino"] {
   --color-accent: #10b981;

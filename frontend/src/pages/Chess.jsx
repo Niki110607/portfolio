@@ -44,7 +44,7 @@ export default function ChessPage() {
         className="
           pointer-events-none
           fixed left-1/2 top-1/2
-          h-[800px] w-[800px]
+          h-[min(800px,140vw)] w-[min(800px,140vw)]
           -translate-x-1/2 -translate-y-1/2
           rounded-full
           bg-[var(--color-accent-glow)]
@@ -57,9 +57,10 @@ export default function ChessPage() {
       <header
         className="
           relative z-10
-          mx-auto flex w-full max-w-5xl
-          items-center justify-between
-          px-6 py-6
+          mx-auto grid w-full max-w-5xl
+          grid-cols-[auto_minmax(0,1fr)_auto]
+          items-center gap-3
+          px-4 py-6 sm:px-6
         "
       >
         <Link
@@ -85,6 +86,7 @@ export default function ChessPage() {
             text-[10px] font-mono uppercase
             tracking-[0.16em]
             text-zinc-400
+            truncate text-center
             sm:text-xs
           "
         >
@@ -124,7 +126,8 @@ export default function ChessPage() {
         className="
           relative z-10
           mx-auto flex w-full max-w-5xl flex-1
-          px-6 pb-16
+          flex-col
+          px-4 pb-16 sm:px-6
         "
       >
         {/* PROJECT TITLE */}
@@ -312,7 +315,7 @@ export default function ChessPage() {
                   active:scale-95
                 "
               >
-                {langIsGerman ? "Brett zurücksetzen" : "Reset Board"}
+                {langIsGerman ? "Reset Board" : "Reset Board"}
               </button>
 
               <button
@@ -334,10 +337,10 @@ export default function ChessPage() {
               >
                 {showEval
                   ? langIsGerman
-                    ? "Bewertung ausblenden"
+                    ? "Hide Evaluation"
                     : "Hide Evaluation"
                   : langIsGerman
-                    ? "Bewertung anzeigen"
+                    ? "Show Evaluation"
                     : "Show Evaluation"}
               </button>
             </div>

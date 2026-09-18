@@ -52,8 +52,8 @@ export default function CnnPage() {
           fixed
           top-1/2
           left-1/2
-          h-[850px]
-          w-[850px]
+          h-[min(850px,140vw)]
+          w-[min(850px,140vw)]
           -translate-x-1/2
           -translate-y-1/2
           rounded-full
@@ -75,9 +75,12 @@ export default function CnnPage() {
           w-full
           max-w-5xl
           items-center
-          justify-between
-          px-6
+          grid
+          grid-cols-[auto_minmax(0,1fr)_auto]
+          gap-3
+          px-4
           py-6
+          sm:px-6
         "
       >
         <Link
@@ -108,6 +111,8 @@ export default function CnnPage() {
             uppercase
             tracking-[0.16em]
             text-zinc-400
+            truncate
+            text-center
             sm:text-xs
           "
         >
@@ -152,11 +157,13 @@ export default function CnnPage() {
           z-10
           mx-auto
           flex
+          flex-col
           w-full
           max-w-5xl
           flex-1
-          px-6
+          px-4
           pb-16
+          sm:px-6
         "
       >
         {/* =========================================

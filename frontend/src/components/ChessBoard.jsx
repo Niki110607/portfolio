@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 import { Chessboard } from "react-chessboard";
 import { Chess } from "chess.js";
+import { API_BASE_URL } from "../lib/api";
 
 const PIECE_TYPES = ["P", "N", "B", "R", "Q", "K"];
 
@@ -9,7 +10,7 @@ const pieceImageSrc = (pieceCode) => `/chessPieces/${pieceCode}.svg`;
 
 const STARTING_POSITION = new Chess().fen();
 
-// Custom piece renderer
+/* Custom piece renderer */
 const createPiece = (pieceCode) =>
   function ChessPiece({ svgStyle }) {
     const isBlack = pieceCode.startsWith("b");
@@ -35,8 +36,7 @@ const createPiece = (pieceCode) =>
             height: "88%",
             userSelect: "none",
             pointerEvents: "none",
-            // Slightly softer depth so the pieces separate
-            // from the board without becoming flashy.
+            /* Keep pieces separated from the board without a heavy shadow. */
             filter: isBlack
               ? "drop-shadow(0 2px 2px rgba(0,0,0,0.45))"
               : "drop-shadow(0 2px 2px rgba(0,0,0,0.28))",
@@ -83,7 +83,7 @@ export default function ChessBoard({
     onStatusChange?.("Engine is analyzing");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/chess/eval/", {
+      const response = await fetch(`${API_BASE_URL}/chess/eval`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -160,8 +160,7 @@ export default function ChessBoard({
     }
   };
 
-  // Softer amber move indicators against
-  // the more neutral graphite board.
+  /* Amber move indicators against the graphite board */
   const squareStyles = lastMove
     ? {
         [lastMove.from]: {
@@ -191,6 +190,7 @@ export default function ChessBoard({
       "
       style={{
         containerType: "inline-size",
+        touchAction: "none",
       }}
       data-theme="chess"
     >
@@ -208,9 +208,7 @@ export default function ChessBoard({
           animationDurationInMs: 220,
           showNotation: true,
 
-          // Neutral graphite/slate palette.
-          // Less blue and less contrast than before,
-          // so the board integrates with the portfolio.
+          /* Neutral graphite palette */
           darkSquareStyle: {
             backgroundColor: "#252932",
           },
@@ -218,7 +216,7 @@ export default function ChessBoard({
             backgroundColor: "#3f4551",
           },
 
-          // Keep notation understated.
+          /* Understated notation */
           darkSquareNotationStyle: {
             color: "rgba(255,255,255,0.32)",
             fontSize: "10px",
@@ -231,8 +229,7 @@ export default function ChessBoard({
           boardStyle: {
             borderRadius: "0.75rem",
 
-            // Reduced from the very heavy previous
-            // inner shadow.
+            /* Soft inner depth */
             boxShadow: "inset 0 0 16px rgba(0,0,0,0.48)",
             overflow: "hidden",
           },

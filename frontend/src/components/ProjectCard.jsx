@@ -53,6 +53,7 @@ export default function ProjectCard({
         border-zinc-800/80
         py-7
         sm:py-8
+        touch-manipulation
         transition-all
         duration-300
       "
@@ -157,6 +158,7 @@ export default function ProjectCard({
                 transition-colors
                 duration-200
                 group-hover:text-[var(--color-accent)]
+                group-active:text-[var(--color-accent)]
               "
             >
               {title}

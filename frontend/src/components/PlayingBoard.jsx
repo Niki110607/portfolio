@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import PlayingCard from "./PlayingCard";
 import { Game, actions } from "engine-blackjack";
+import { API_BASE_URL } from "../lib/api";
 
 const createCustomGame = () => {
   const defaultState = new Game().getState();
@@ -60,7 +61,7 @@ export default function PlayingBoard({ onHint }) {
     const isSoft = hand.playerValue.hi > hand.playerValue.lo;
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/blackjack/predict", {
+      const response = await fetch(`${API_BASE_URL}/blackjack/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -158,6 +159,7 @@ export default function PlayingBoard({ onHint }) {
         font-sans
         text-[var(--color-text)]
       "
+      style={{ touchAction: "manipulation" }}
     >
       {/* Main table */}
       <div

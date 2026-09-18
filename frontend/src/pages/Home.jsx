@@ -95,8 +95,10 @@ export default function Home() {
           max-w-5xl
           items-center
           justify-between
-          px-6
+          gap-4
+          px-4
           py-6
+          sm:px-6
         "
       >
         <span
@@ -111,7 +113,7 @@ export default function Home() {
           Portfolio
         </span>
 
-        <nav className="flex items-center gap-5 sm:gap-7">
+        <nav className="flex min-w-0 items-center justify-end gap-3 sm:gap-7">
           <a
             href="#work"
             className="
@@ -179,7 +181,7 @@ export default function Home() {
       </header>
 
       <main className="relative z-10">
-        <div className="mx-auto flex w-full max-w-5xl justify-end px-6 pt-2">
+        <div className="mx-auto flex w-full max-w-5xl justify-end px-4 pt-2 sm:px-6">
           <div
             className="
               inline-flex

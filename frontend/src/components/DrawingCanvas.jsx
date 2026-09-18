@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+import { API_BASE_URL } from "../lib/api";
 
 export default function DrawingCanvas({ onPrediction, onClear }) {
   const canvasRef = useRef(null);
@@ -50,6 +50,10 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
   const startDrawing = (e) => {
     e.preventDefault();
 
+    if (!e.isPrimary) return;
+
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+
     const ctx = canvasRef.current.getContext("2d");
     const { x, y } = getCoordinates(e);
 
@@ -73,7 +77,7 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
   };
 
   const draw = (e) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !e.isPrimary) return;
 
     e.preventDefault();
 
@@ -93,6 +97,9 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
     if (!isDrawing) return;
 
     if (e) e.preventDefault();
+    if (e?.pointerId !== undefined) {
+      e.currentTarget.releasePointerCapture?.(e.pointerId);
+    }
 
     const ctx = canvasRef.current.getContext("2d");
 
@@ -145,28 +152,24 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
       <div
         className="
           relative
-          h-72
-          w-72
+          aspect-square
+          w-full
+          max-w-80
           overflow-hidden
           rounded-2xl
           border
           border-zinc-800/60
           bg-black
-          sm:h-80
-          sm:w-80
         "
       >
         <canvas
           ref={canvasRef}
           width={28}
           height={28}
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseLeave={stopDrawing}
-          onTouchStart={startDrawing}
-          onTouchMove={draw}
-          onTouchEnd={stopDrawing}
+          onPointerDown={startDrawing}
+          onPointerMove={draw}
+          onPointerUp={stopDrawing}
+          onPointerCancel={stopDrawing}
           className="
             relative
             z-10
@@ -176,6 +179,7 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
             touch-none
             [image-rendering:pixelated]
           "
+          style={{ touchAction: "none" }}
         />
 
         {showGrid && (
@@ -207,7 +211,7 @@ export default function DrawingCanvas({ onPrediction, onClear }) {
       </div>
 
       {/* Control Actions */}
-      <div className="flex w-72 items-center gap-3 sm:w-80">
+      <div className="flex w-full max-w-80 items-center gap-3">
         <button
           onClick={clearCanvas}
           className="

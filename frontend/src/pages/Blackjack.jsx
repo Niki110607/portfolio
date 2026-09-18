@@ -81,7 +81,7 @@ export default function BlackjackPage() {
         className="
           pointer-events-none
           fixed left-1/2 top-1/2
-          h-[900px] w-[900px]
+          h-[min(900px,140vw)] w-[min(900px,140vw)]
           -translate-x-1/2 -translate-y-1/2
           rounded-full
           bg-emerald-500/[0.035]
@@ -92,9 +92,10 @@ export default function BlackjackPage() {
       <header
         className="
           relative z-10
-          mx-auto flex w-full max-w-6xl
-          items-center justify-between
-          px-6 py-6
+          mx-auto grid w-full max-w-6xl
+          grid-cols-[auto_minmax(0,1fr)_auto]
+          items-center gap-3
+          px-4 py-6
           sm:px-8
         "
       >
@@ -121,6 +122,7 @@ export default function BlackjackPage() {
             text-[10px] font-mono uppercase
             tracking-[0.18em]
             text-zinc-400
+            truncate text-center
             sm:text-xs
           "
         >
@@ -157,7 +159,8 @@ export default function BlackjackPage() {
         className="
           relative z-10
           mx-auto flex w-full max-w-6xl flex-1
-          px-6 pb-16
+          flex-col
+          px-4 pb-16
           sm:px-8
         "
       >

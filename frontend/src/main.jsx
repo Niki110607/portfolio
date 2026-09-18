@@ -1,4 +1,4 @@
-// src/main.jsx
+/* Application entry point */
 
 import React from "react";
 import ReactDOM from "react-dom/client";

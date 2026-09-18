@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { API_BASE_URL } from "../lib/api";
 
 const INITIAL_ELEMENTS = [
   { emoji: "💧", name: "Water" },
@@ -35,12 +36,18 @@ export default function CraftBoard() {
     const itemHeight = targetElement?.offsetHeight || 62;
 
     return {
-      x: e.clientX - rect.left - itemWidth / 2,
-      y: e.clientY - rect.top - itemHeight / 2,
+      x: Math.max(
+        0,
+        Math.min(e.clientX - rect.left - itemWidth / 2, rect.width - itemWidth),
+      ),
+      y: Math.max(
+        0,
+        Math.min(e.clientY - rect.top - itemHeight / 2, rect.height - itemHeight),
+      ),
     };
   };
 
-  const mouseInObject = (e, element) => {
+  const pointInObject = (e, element) => {
     if (!element) return false;
 
     const rect = element.getBoundingClientRect();
@@ -53,10 +60,13 @@ export default function CraftBoard() {
     );
   };
 
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
     const clickedItemNode = e.target.closest(".sidebar-card, .board-card");
 
     if (!clickedItemNode) return;
+
+    e.preventDefault();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
 
     const emoji = clickedItemNode.dataset.emoji;
     const name = clickedItemNode.dataset.name;
@@ -77,7 +87,7 @@ export default function CraftBoard() {
       y: pos.y,
     });
 
-    if (isBoardItem && mouseInObject(e, mainAreaRef.current)) {
+    if (isBoardItem && pointInObject(e, mainAreaRef.current)) {
       setBoardItems((prev) => prev.filter((item) => item.id !== boardId));
     }
   };
@@ -85,7 +95,7 @@ export default function CraftBoard() {
   useEffect(() => {
     if (!draggedItem) return;
 
-    const handleWindowMouseMove = (e) => {
+    const handleWindowPointerMove = (e) => {
       const draggedNode = document.getElementById("dragged-card-ghost");
       const pos = getViewportPosition(e, draggedNode);
 
@@ -100,8 +110,8 @@ export default function CraftBoard() {
       );
     };
 
-    const handleWindowMouseUp = (e) => {
-      if (mouseInObject(e, mainAreaRef.current)) {
+    const handleWindowPointerUp = (e) => {
+      if (pointInObject(e, mainAreaRef.current)) {
         const draggedNode = document.getElementById("dragged-card-ghost");
         const canvasPos = getCanvasRelativePosition(e, draggedNode);
         const collisionItem = checkCollision(draggedNode);
@@ -124,12 +134,14 @@ export default function CraftBoard() {
       setDraggedItem(null);
     };
 
-    window.addEventListener("mousemove", handleWindowMouseMove);
-    window.addEventListener("mouseup", handleWindowMouseUp);
+    window.addEventListener("pointermove", handleWindowPointerMove);
+    window.addEventListener("pointerup", handleWindowPointerUp);
+    window.addEventListener("pointercancel", handleWindowPointerUp);
 
     return () => {
-      window.removeEventListener("mousemove", handleWindowMouseMove);
-      window.removeEventListener("mouseup", handleWindowMouseUp);
+      window.removeEventListener("pointermove", handleWindowPointerMove);
+      window.removeEventListener("pointerup", handleWindowPointerUp);
+      window.removeEventListener("pointercancel", handleWindowPointerUp);
     };
   }, [draggedItem]);
 
@@ -172,7 +184,7 @@ export default function CraftBoard() {
     setCombiningIds((prev) => [...prev, ...pairIds]);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/craft/predict", {
+      const response = await fetch(`${API_BASE_URL}/craft/predict`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -239,7 +251,7 @@ export default function CraftBoard() {
         font-sans
         text-zinc-100
       "
-      onMouseDown={handleMouseDown}
+      onPointerDown={handlePointerDown}
     >
       {/* =========================================
           MAIN WORKSPACE
@@ -477,6 +489,7 @@ export default function CraftBoard() {
                   flex
                   w-[84px]
                   cursor-grab
+                  touch-none
                   flex-col
                   items-center
                   rounded-lg
@@ -653,6 +666,7 @@ export default function CraftBoard() {
                   inline-flex
                   shrink-0
                   cursor-grab
+                  touch-none
                   items-center
                   gap-2
                   rounded-lg
