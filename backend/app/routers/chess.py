@@ -19,9 +19,10 @@ class EvalRequest(BaseModel):
 def evaluate_position(payload: EvalRequest):
     with game_lock:
         game.play_game(payload.fen)
-        best_move, evaluation = game.evaluate_position()
+        best_move, evaluation, nodes_visited = game.evaluate_position()
 
     return {
         "best_move": best_move.uci(),
         "evaluation": evaluation,
+        "nodes": nodes_visited
     }
