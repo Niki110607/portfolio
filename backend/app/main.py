@@ -10,7 +10,7 @@ app = FastAPI(title="AI Arcade Portfolio API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://portfolio-frontend-yqf4.onrender.com"],
+    allow_origins=["https://portfolio-frontend-yqf4.onrender.com", "niklas-pichler.is-a.dev"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
